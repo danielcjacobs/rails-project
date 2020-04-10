@@ -1,4 +1,101 @@
-<p id="notice"><%= notice %></p>
+<html lang="en">
+<head>
+    <title>Project4</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $( function() {
+            $( "#accordion" ).accordion({collapsible: true, active: false});
+        });
+    </script>
+</head>
+<body>
+
+<nav id="header">
+    <div>
+		<% if user_signed_in?%>
+			<h1>Welcome, <%= current_user.login %></h1>
+			<h1 id="major"></h1>
+			<h1 id="catYear"></h1>
+			<%= link_to "Sign Out", destroy_user_session_path, :method => :delete %>
+		<% else %>
+			<%= link_to "Sign In", new_user_session_path, :method => :get %>
+			<%= link_to "Sign up", new_user_registration_path, :method => :get %>
+		<% end %>
+        
+    </div>
+    <div>
+        <div class="dropdown">
+            <button class="dropbtn">
+                <a><i class="fa fa-caret-down"></i>Change Plan</a>
+            </button>
+            <div class="dropdown-content">
+                <a href="#">Link 1</a>
+                <a href="#">Link 2</a>
+                <a href="#">Link 3</a>
+            </div>
+        </div>
+		<% if user_signed_in?%>
+			<form name="logout" action="logout.php" method="post">
+				<button type="submit" value="Submit">
+					<a><i class="fa fa-arrow-circle-left"></i>Logout</a>
+				</button>
+			</form>
+		<% else %>
+		<% end %>
+        <a href="http://judah.cedarville.edu/peopleschoice/index.php"><i class="fa fa-home"></i>Home</a>
+    </div>
+</nav>
+
+<div class="main">
+    <div class="upper">
+        <div id= "upperLeft" class="left panel">
+            <header class="panelHeader">Validation Form</header>
+            <div class="container">
+                <div id="accordion">
+                </div>
+            </div>
+        </div>
+
+        <div  id="upperRight" class="right panel">
+            <header class="panelHeader">Course Schedule</header>
+            <div class="container">
+            </div>
+        </div>
+    </div>
+
+    <div class="lower">
+        <div id="lowerLeft" class="left panel">
+            <header class="panelHeader">Hours</header>                                  <div class="container">
+                <p id="hrsCompleted">Hours Completed: </p>
+                <p id="hrsCurrent">Current Hours: </p>
+                <p id="hrsPlanned">Total Hours Planned: </p>
+            </div>
+        </div>
+
+        <div id="lowerRight" class="right panel">
+            <header class="panelHeader">Catalog Search</header>
+            <table id="catalogTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Hours</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<script>(function(){ createPlan(); })(); </script>
+
+<!--<p id="notice"><%= notice %></p>
 
 <h1>Plans</h1>
 
@@ -27,4 +124,5 @@
 <%= link_to 'New Plan', new_plan_path %>
 
 <div id="testDiv"></div> 
-<input type='text' id='calendarField' />
+<input type='text' id='calendarField' /> -->
+</body>

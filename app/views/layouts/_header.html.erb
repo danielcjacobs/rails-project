@@ -1,10 +1,33 @@
 <header> 
-   <h1>Welcome to the Academic Planning Tool</h1>
-   <% if user_signed_in?%>
-      <h3>Welcome, <%= current_user.login %></h3>
-      <%= link_to "Sign Out", destroy_user_session_path, :method => :delete %>
-   <% else %>
-      <%= link_to "Sign In", new_user_session_path, :method => :get %>
-      <%= link_to "Sign up", new_user_registration_path, :method => :get %>
-   <% end %>
+<% if user_signed_in?%>
+	<div>
+			<h1>Welcome, <%= current_user.login %></h1>
+			<h1 id="major"></h1>
+			<h1 id="catYear"></h1>
+			<%= link_to "Sign Out", destroy_user_session_path, :method => :delete %>        
+    </div>
+    <div>
+        <div class="dropdown">
+            <button class="dropbtn">
+                <a><i class="fa fa-caret-down"></i>Change Plan</a>
+            </button>
+            <div class="dropdown-content">
+                <a href="#">Link 1</a>
+                <a href="#">Link 2</a>
+                <a href="#">Link 3</a>
+            </div>
+        </div>
+		<form name="logout" action="logout.php" method="post">
+			<button type="submit" value="Submit">
+				<a><i class="fa fa-arrow-circle-left"></i>Logout</a>
+			</button>
+		</form>
+        <a href="http://judah.cedarville.edu/peopleschoice/index.php"><i class="fa fa-home"></i>Home</a>
+    </div>
+	</nav>
+<% else %>
+	<h2>Welcome to the Academic Planning Tool</h2>
+    <%= link_to "Sign In", new_user_session_path, :method => :get %>
+    <%= link_to "Sign up", new_user_registration_path, :method => :get %>
+<% end %>
 </header>
