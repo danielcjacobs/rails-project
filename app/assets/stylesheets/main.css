@@ -179,7 +179,7 @@ input[type=submit]:disabled {
     font-family: 'Lucida Grande';
     display: flex;
     flex-direction: column;
-    background-image: url('../img/beach.jpg');
+    background-image: url('beach.jpg');
     background-size: cover;
 }
 
