@@ -1,8 +1,8 @@
 $(function(){
 	console.log("got here");
-	$.get("plans/1.json", function(data){
-		console.log(data);
-	});
+	//$.get("plans/1.json", function(data){
+	//	console.log(data);
+	//});
 });
 
 class Course {
