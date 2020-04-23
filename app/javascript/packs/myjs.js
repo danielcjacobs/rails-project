@@ -1,7 +1,58 @@
 $(function(){
-	console.log("got here");
-	$.get("plans/1.json", function(data){
-		console.log(data);
+	$.get("plans.json", function(plans){
+		console.log(plans);
+        plan = false;
+        $(".dropdown-content").empty();
+        for (let i in plans){
+            if (plans[i].major === selectedMajor && plans[i].catalog.year === selectedCatalogYear){
+                plan = plans[i];
+            }
+            else{
+                // Put other plan options in dropdown menu on nav bar
+                $(".dropdown-content").append("<a onclick='changePlan(this.text)'>" + plans[i].major + ", " + plans[i].catalog.year + "</a>");
+            }
+        }
+        if (plan === false){
+            console.log("Error: did not find selected plan");
+        }
+		
+		currPlan = new Plan(plan.user.login, plan.plan_name, plan.major, plan.curr_year, plan.curr_term, plan.courses, plan.catalog.year);
+        currPlan.sortCourses();
+        currPlan.generateHTML();
+        $("#major").html(plan.major);
+        $("#catYear").html(plan.catalog.year);
+
+        $("#hrsCompleted").html("Hours Completed: " + currPlan.hrsCompleted);
+        $("#hrsCurrent").html("Current Hours: " + currPlan.hrsCurrent);
+        $("#hrsPlanned").html("Total Hours Planned: " + currPlan.hrsPlanned);
+
+		$("#catalogTable").DataTable( {
+           	"dom": '<"top"if>t',
+           	"data": plan.catalog.courses,
+           	"columns": [
+               		{ "data": "designator" },
+               		{ "data": "name" },
+               		{ "data": "description" },
+               		{ "data": "credits"}
+           	],
+           	"scrollY": "95px",
+           	"paging": false,
+           	"scrollCollapse": false 
+        	});
+        	$('.dataTables_scrollHeadInner').css('padding', '0');
+		
+        
+        var requirements = plan.requirements;
+
+        $('#accordion').empty();
+        for (let i in requirements){
+            let courses = requirements[i].courses;
+            let itemHtml = "";
+            for (let c in courses){
+                itemHtml += '<li>' + courses[c] + ': ' + plan.catalog.courses[courses[c]].name + '</li>';
+            }
+            $('#accordion').append('<h3><a href="#">' + requirements[i].name + '</a></h3><div>' + itemHtml + '</div>').accordion('refresh');
+        }
 	});
 });
 
@@ -10,8 +61,8 @@ class Course {
         this.term = term;
         this.year = year;
         this.id = desig;
-        this.name = catalog.courses[desig].name;
-        this.hours = catalog.courses[desig].credits;
+        this.name = plan.catalog.courses[desig].name;
+        this.hours = plan.catalog.courses[desig].credits;
     }
 }
 
@@ -178,75 +229,37 @@ class Year {
 }
 
 var currPlan = false;
-var catalog = false;
-var planRequest = false;
-var accordionRequest = false;
+var plan = false;
 var selectedMajor = "Comp. Sci.";
 var selectedCatalogYear = 2017;
 var catalogLoaded = false;
-
-function createRequest(){
-    let request = false;
-    if(window.XMLHttpRequest && !(window.ActiveXObject)){
-        try{
-            request = new XMLHttpRequest();
-        }
-        catch(e){
-            request = false;
-        }
-    }
-    else if(window.ActiveXObject){
-        try{
-             request = new ActiveXObject("Msxml2.XMLHTTP");
-        }
-        catch(e){
-            try{
-                 request = new ActiveXObject("Microsoft.XMLHTTP");
-            }
-            catch(e){
-                request = false;
-            }
-        }
-    }
-    return request;
-}
-
-function sendRequest(Method, URL, callback) {
-    request = createRequest();
-    if (request){
-        request.open(Method, URL, true);
-        request.onreadystatechange = callback;
-        request.send(null);
-    }
-    return request;
-}
 
 function planCallback(){
     if (planRequest.readyState == 4){
         var jsonResponse = JSON.parse(planRequest.responseText);
         var plans = jsonResponse.plan;
         catalog = jsonResponse.catalog;
-        var planObject = false;
+        var plan = false;
         $(".dropdown-content").empty();
         for (let i in plans){
             if (plans[i].major === selectedMajor && plans[i].catalog_year === selectedCatalogYear){
-                planObject = plans[i];
+                plan = plans[i];
             }
             else{
                 // Put other plan options in dropdown menu on nav bar
                 $(".dropdown-content").append("<a onclick='changePlan(this.text)'>" + plans[i].major + ", " + plans[i].catalog_year + "</a>");
             }
         }
-        if (planObject === false){
+        if (plan === false){
             console.log("Error: did not find selected plan");
         }
 
-        currPlan = new Plan(planObject.student, planObject.plan_name, planObject.major, planObject.currYear, planObject.currTerm, planObject.courses, planObject.catalog_year);
+        currPlan = new Plan(plan.student, plan.plan_name, plan.major, plan.currYear, plan.currTerm, plan.courses, plan.catalog_year);
         currPlan.sortCourses();
         currPlan.generateHTML();
-        $("#username").html(planObject.student);
-        $("#major").html(planObject.major);
-        $("#catYear").html(planObject.catalog_year);
+        $("#username").html(plan.student);
+        $("#major").html(plan.major);
+        $("#catYear").html(plan.catalog_year);
 
         $("#hrsCompleted").html("Hours Completed: " + currPlan.hrsCompleted);
         $("#hrsCurrent").html("Current Hours: " + currPlan.hrsCurrent);
@@ -257,7 +270,7 @@ function planCallback(){
             courses.push(catalog.courses[i]);
         }
 
-	if (!catalogLoaded) {
+		if (!catalogLoaded) {
         	$("#catalogTable").DataTable( {
            	"dom": '<"top"if>t',
            	"data": courses,

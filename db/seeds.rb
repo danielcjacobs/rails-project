@@ -39,28 +39,27 @@ User.create(login: "G", email: "g@cedarville.edu", password: "password", passwor
 catalog1 = Catalog.new
 catalog1.year = 2017
 catalog1.save!
-
 catalog2 = Catalog.new
 catalog2.year = 2020
 catalog2.save!
 
 #requirements
-requirements1 = Requirement.new
-requirements1.major_id = 1
-requirements1.catalog_id = 1
-requirements1.save!
-requirements2 = Requirement.new
-requirements2.major_id = 1
-requirements2.catalog_id = 2
-requirements2.save!
-requirements3 = Requirement.new
-requirements3.major_id = 2
-requirements3.catalog_id = 1
-requirements3.save!
-requirements4 = Requirement.new
-requirements4.major_id = 2
-requirements4.catalog_id = 2
-requirements4.save!
+requirement1 = Requirement.new
+requirement1.major_id = 1
+requirement1.catalog_id = 1
+requirement1.save!
+requirement2 = Requirement.new
+requirement2.major_id = 1
+requirement2.catalog_id = 2
+requirement2.save!
+requirement3 = Requirement.new
+requirement3.major_id = 2
+requirement3.catalog_id = 1
+requirement3.save!
+requirement4 = Requirement.new
+requirement4.major_id = 2
+requirement4.catalog_id = 2
+requirement4.save!
 
 #plans
 plan1 = Plan.new
@@ -300,322 +299,426 @@ course33.save!
 catalogCourse1 = CatalogCourse.new
 catalogCourse1.catalog_id = 1
 catalogCourse1.course_id = 1
+catalogCourse1.save!
 catalogCourse2 = CatalogCourse.new
 catalogCourse2.catalog_id = 1
 catalogCourse2.course_id = 2
+catalogCourse2.save!
 catalogCourse3 = CatalogCourse.new
 catalogCourse3.catalog_id = 1
 catalogCourse3.course_id = 3
+catalogCourse3.save!
 catalogCourse4 = CatalogCourse.new
 catalogCourse4.catalog_id = 1
 catalogCourse4.course_id = 4
+catalogCourse4.save!
 catalogCourse5 = CatalogCourse.new
 catalogCourse5.catalog_id = 1
 catalogCourse5.course_id = 5
+catalogCourse5.save!
 catalogCourse6 = CatalogCourse.new
 catalogCourse6.catalog_id = 1
 catalogCourse6.course_id = 6
+catalogCourse6.save!
 catalogCourse7 = CatalogCourse.new
 catalogCourse7.catalog_id = 1
 catalogCourse7.course_id = 7
+catalogCourse7.save!
 catalogCourse8 = CatalogCourse.new
 catalogCourse8.catalog_id = 1
 catalogCourse8.course_id = 8
+catalogCourse8.save!
 catalogCourse9 = CatalogCourse.new
 catalogCourse9.catalog_id = 1
 catalogCourse9.course_id = 9
+catalogCourse9.save!
 catalogCourse10 = CatalogCourse.new
 catalogCourse10.catalog_id = 1
 catalogCourse10.course_id = 10
+catalogCourse10.save!
 catalogCourse11 = CatalogCourse.new
 catalogCourse11.catalog_id = 1
 catalogCourse11.course_id = 11
+catalogCourse11.save!
 catalogCourse12 = CatalogCourse.new
 catalogCourse12.catalog_id = 1
 catalogCourse12.course_id = 12
+catalogCourse12.save!
 catalogCourse13 = CatalogCourse.new
 catalogCourse13.catalog_id = 1
 catalogCourse13.course_id = 13
+catalogCourse13.save!
 catalogCourse14 = CatalogCourse.new
 catalogCourse14.catalog_id = 1
 catalogCourse14.course_id = 14
+catalogCourse14.save!
 catalogCourse15 = CatalogCourse.new
 catalogCourse15.catalog_id = 1
 catalogCourse15.course_id = 15
+catalogCourse15.save!
 catalogCourse16 = CatalogCourse.new
 catalogCourse16.catalog_id = 1
 catalogCourse16.course_id = 16
+catalogCourse16.save!
 catalogCourse17 = CatalogCourse.new
 catalogCourse17.catalog_id = 1
 catalogCourse17.course_id = 17
+catalogCourse17.save!
 catalogCourse18 = CatalogCourse.new
 catalogCourse18.catalog_id = 1
 catalogCourse18.course_id = 18
+catalogCourse18.save!
 catalogCourse19 = CatalogCourse.new
 catalogCourse19.catalog_id = 1
 catalogCourse19.course_id = 19
+catalogCourse19.save!
 catalogCourse20 = CatalogCourse.new
 catalogCourse20.catalog_id = 1
 catalogCourse20.course_id = 20
+catalogCourse20.save!
 catalogCourse21 = CatalogCourse.new
 catalogCourse21.catalog_id = 1
 catalogCourse21.course_id = 21
+catalogCourse21.save!
 catalogCourse22 = CatalogCourse.new
 catalogCourse22.catalog_id = 1
 catalogCourse22.course_id = 22
+catalogCourse22.save!
 catalogCourse23 = CatalogCourse.new
 catalogCourse23.catalog_id = 1
 catalogCourse23.course_id = 23
+catalogCourse23.save!
 catalogCourse24 = CatalogCourse.new
 catalogCourse24.catalog_id = 1
 catalogCourse24.course_id = 24
+catalogCourse24.save!
 catalogCourse25 = CatalogCourse.new
 catalogCourse25.catalog_id = 1
 catalogCourse25.course_id = 25
+catalogCourse25.save!
 catalogCourse26 = CatalogCourse.new
 catalogCourse26.catalog_id = 1
 catalogCourse26.course_id = 26
+catalogCourse26.save!
 catalogCourse27 = CatalogCourse.new
 catalogCourse27.catalog_id = 1
 catalogCourse27.course_id = 27
+catalogCourse27.save!
 catalogCourse28 = CatalogCourse.new
 catalogCourse28.catalog_id = 1
 catalogCourse28.course_id = 28
+catalogCourse28.save!
 catalogCourse29 = CatalogCourse.new
 catalogCourse29.catalog_id = 1
 catalogCourse29.course_id = 29
+catalogCourse29.save!
 catalogCourse30 = CatalogCourse.new
 catalogCourse30.catalog_id = 1
 catalogCourse30.course_id = 30
+catalogCourse30.save!
 catalogCourse31 = CatalogCourse.new
 catalogCourse31.catalog_id = 1
 catalogCourse31.course_id = 31
+catalogCourse31.save!
 catalogCourse32 = CatalogCourse.new
 catalogCourse32.catalog_id = 1
 catalogCourse32.course_id = 32
+catalogCourse32.save!
 catalogCourse33 = CatalogCourse.new
 catalogCourse33.catalog_id = 1
 catalogCourse33.course_id = 33
+catalogCourse33.save!
 catalogCourse34 = CatalogCourse.new
 catalogCourse34.catalog_id = 2
 catalogCourse34.course_id = 1
+catalogCourse34.save!
 catalogCourse35 = CatalogCourse.new
 catalogCourse35.catalog_id = 2
 catalogCourse35.course_id = 2
+catalogCourse35.save!
 catalogCourse36 = CatalogCourse.new
 catalogCourse36.catalog_id = 2
 catalogCourse36.course_id = 3
+catalogCourse36.save!
 catalogCourse37 = CatalogCourse.new
 catalogCourse37.catalog_id = 2
 catalogCourse37.course_id = 4
+catalogCourse37.save!
 catalogCourse38 = CatalogCourse.new
 catalogCourse38.catalog_id = 2
 catalogCourse38.course_id = 5
+catalogCourse38.save!
 catalogCourse39 = CatalogCourse.new
 catalogCourse39.catalog_id = 2
 catalogCourse39.course_id = 6
+catalogCourse39.save!
 catalogCourse40 = CatalogCourse.new
 catalogCourse40.catalog_id = 2
 catalogCourse40.course_id = 7
+catalogCourse40.save!
 catalogCourse41 = CatalogCourse.new
 catalogCourse41.catalog_id = 2
 catalogCourse41.course_id = 8
+catalogCourse41.save!
 catalogCourse42 = CatalogCourse.new
 catalogCourse42.catalog_id = 2
 catalogCourse42.course_id = 9
+catalogCourse42.save!
 catalogCourse43 = CatalogCourse.new
 catalogCourse43.catalog_id = 2
 catalogCourse43.course_id = 10
+catalogCourse43.save!
 catalogCourse44 = CatalogCourse.new
 catalogCourse44.catalog_id = 2
 catalogCourse44.course_id = 11
+catalogCourse44.save!
 catalogCourse45 = CatalogCourse.new
 catalogCourse45.catalog_id = 2
 catalogCourse45.course_id = 12
+catalogCourse45.save!
 catalogCourse46 = CatalogCourse.new
 catalogCourse46.catalog_id = 2
 catalogCourse46.course_id = 13
+catalogCourse46.save!
 catalogCourse47 = CatalogCourse.new
 catalogCourse47.catalog_id = 2
 catalogCourse47.course_id = 14
+catalogCourse47.save!
 catalogCourse48 = CatalogCourse.new
 catalogCourse48.catalog_id = 2
 catalogCourse48.course_id = 15
+catalogCourse48.save!
 catalogCourse49 = CatalogCourse.new
 catalogCourse49.catalog_id = 2
 catalogCourse49.course_id = 16
+catalogCourse49.save!
 catalogCourse50 = CatalogCourse.new
 catalogCourse50.catalog_id = 2
 catalogCourse50.course_id = 17
+catalogCourse50.save!
 catalogCourse51 = CatalogCourse.new
 catalogCourse51.catalog_id = 2
 catalogCourse51.course_id = 18
+catalogCourse51.save!
 catalogCourse52 = CatalogCourse.new
 catalogCourse52.catalog_id = 2
 catalogCourse52.course_id = 19
+catalogCourse52.save!
 catalogCourse53 = CatalogCourse.new
 catalogCourse53.catalog_id = 2
 catalogCourse53.course_id = 20
+catalogCourse53.save!
 catalogCourse54 = CatalogCourse.new
 catalogCourse54.catalog_id = 2
 catalogCourse54.course_id = 21
+catalogCourse54.save!
 catalogCourse55 = CatalogCourse.new
 catalogCourse55.catalog_id = 2
 catalogCourse55.course_id = 22
+catalogCourse55.save!
 catalogCourse56 = CatalogCourse.new
 catalogCourse56.catalog_id = 2
 catalogCourse56.course_id = 23
+catalogCourse56.save!
 catalogCourse57 = CatalogCourse.new
 catalogCourse57.catalog_id = 2
 catalogCourse57.course_id = 24
+catalogCourse57.save!
 catalogCourse58 = CatalogCourse.new
 catalogCourse58.catalog_id = 2
 catalogCourse58.course_id = 25
+catalogCourse58.save!
 catalogCourse59 = CatalogCourse.new
 catalogCourse59.catalog_id = 2
 catalogCourse59.course_id = 26
+catalogCourse59.save!
 catalogCourse60 = CatalogCourse.new
 catalogCourse60.catalog_id = 2
 catalogCourse60.course_id = 27
+catalogCourse60.save!
 catalogCourse61 = CatalogCourse.new
 catalogCourse61.catalog_id = 2
 catalogCourse61.course_id = 28
+catalogCourse61.save!
 catalogCourse62 = CatalogCourse.new
 catalogCourse62.catalog_id = 2
 catalogCourse62.course_id = 29
+catalogCourse62.save!
 catalogCourse63 = CatalogCourse.new
 catalogCourse63.catalog_id = 2
 catalogCourse63.course_id = 30
+catalogCourse63.save!
 catalogCourse64 = CatalogCourse.new
 catalogCourse64.catalog_id = 2
 catalogCourse64.course_id = 31
+catalogCourse64.save!
 catalogCourse65 = CatalogCourse.new
 catalogCourse65.catalog_id = 2
 catalogCourse65.course_id = 32
+catalogCourse65.save!
 catalogCourse66 = CatalogCourse.new
 catalogCourse66.catalog_id = 2
 catalogCourse66.course_id = 33
+catalogCourse66.save!
 
 #categories
-Core1 = Category.new
-Core1.name = "Core"
-Core1.requirements_id = 1
-Electives1 = Category.new
-Electives1.name = "Electives"
-Electives1.requirements_id = 1
-Cognates1 = Category.new
-Cognates1.name = "Cognates"
-Cognates1.requirements_id = 1
+core1 = Category.new
+core1.name = "Core"
+core1.requirement_id = 1
+core1.save!
+electives1 = Category.new
+electives1.name = "Electives"
+electives1.requirement_id = 1
+electives1.save!
+cognates1 = Category.new
+cognates1.name = "Cognates"
+cognates1.requirement_id = 1
+cognates1.save!
 
-Core2 = Category.new
-Core2.name = "Core"
-Core2.requirements_id = 2
-Electives2 = Category.new
-Electives2.name = "Electives"
-Electives2.requirements_id = 2
-Cognates2 = Category.new
-Cognates2.name = "Cognates"
-Cognates2.requirements_id = 2
+core2 = Category.new
+core2.name = "Core"
+core2.requirement_id = 2
+core2.save!
+electives2 = Category.new
+electives2.name = "Electives"
+electives2.requirement_id = 2
+electives2.save!
+cognates2 = Category.new
+cognates2.name = "Cognates"
+cognates2.requirement_id = 2
+cognates2.save!
 
-Core3 = Category.new
-Core3.name = "Core"
-Core3.requirements_id = 3
-Electives3 = Category.new
-Electives3.name = "Electives"
-Electives3.requirements_id = 3
-Cognates3 = Category.new
-Cognates3.name = "Cognates"
-Cognates3.requirements_id = 3
+core3 = Category.new
+core3.name = "Core"
+core3.requirement_id = 3
+core3.save!
+electives3 = Category.new
+electives3.name = "Electives"
+electives3.requirement_id = 3
+electives3.save!
+cognates3 = Category.new
+cognates3.name = "Cognates"
+cognates3.requirement_id = 3
+cognates3.save!
 
-Core4 = Category.new
-Core4.name = "Core"
-Core4.requirements_id = 4
-Electives4 = Category.new
-Electives4.name = "Electives"
-Electives4.requirements_id = 4
-Cognates4 = Category.new
-Cognates4.name = "Cognates"
-Cognates4.requirements_id = 4
+core4 = Category.new
+core4.name = "Core"
+core4.requirement_id = 4
+core4.save!
+electives4 = Category.new
+electives4.name = "Electives"
+electives4.requirement_id = 4
+electives4.save!
+cognates4 = Category.new
+cognates4.name = "Cognates"
+cognates4.requirement_id = 4
+cognates4.save!
 
 #category courses
 categoryCourse1 = CategoryCourse.new
 categoryCourse1.category_id = 1
 categoryCourse1.course_id = 1
+categoryCourse1.save!
 categoryCourse2 = CategoryCourse.new
 categoryCourse2.category_id = 2
 categoryCourse2.course_id = 2
+categoryCourse2.save!
 categoryCourse3 = CategoryCourse.new
 categoryCourse3.category_id = 1
 categoryCourse3.course_id = 5
+categoryCourse3.save!
 categoryCourse4 = CategoryCourse.new
 categoryCourse4.category_id = 2
 categoryCourse4.course_id = 4
+categoryCourse3.save!
 categoryCourse5 = CategoryCourse.new
 categoryCourse5.category_id = 2
 categoryCourse5.course_id = 19
+categoryCourse4.save!
 categoryCourse6 = CategoryCourse.new
 categoryCourse6.category_id = 2
 categoryCourse6.course_id = 7
+categoryCourse6.save!
 categoryCourse7 = CategoryCourse.new
 categoryCourse7.category_id = 3
 categoryCourse7.course_id = 13
+categoryCourse7.save!
 categoryCourse8 = CategoryCourse.new
 categoryCourse8.category_id = 3
 categoryCourse8.course_id = 18
+categoryCourse8.save!
 categoryCourse9 = CategoryCourse.new
 categoryCourse9.category_id = 4
 categoryCourse9.course_id = 8
+categoryCourse9.save!
 categoryCourse10 = CategoryCourse.new
 categoryCourse10.category_id = 4
 categoryCourse10.course_id = 12
+categoryCourse10.save!
 categoryCourse11 = CategoryCourse.new
 categoryCourse11.category_id = 5
 categoryCourse11.course_id = 21
+categoryCourse11.save!
 categoryCourse12 = CategoryCourse.new
 categoryCourse12.category_id = 5
 categoryCourse12.course_id = 11
+categoryCourse12.save!
 categoryCourse13 = CategoryCourse.new
 categoryCourse13.category_id = 6
 categoryCourse13.course_id = 7
+categoryCourse13.save!
 categoryCourse14 = CategoryCourse.new
 categoryCourse14.category_id = 6
 categoryCourse14.course_id = 28
+categoryCourse14.save!
 categoryCourse15 = CategoryCourse.new
 categoryCourse15.category_id = 7
 categoryCourse15.course_id = 15
+categoryCourse15.save!
 categoryCourse16 = CategoryCourse.new
 categoryCourse16.category_id = 7
 categoryCourse16.course_id = 13
+categoryCourse16.save!
 categoryCourse17 = CategoryCourse.new
 categoryCourse17.category_id = 8
 categoryCourse17.course_id = 30
+categoryCourse17.save!
 categoryCourse18 = CategoryCourse.new
 categoryCourse18.category_id = 8
 categoryCourse18.course_id = 23
+categoryCourse18.save!
 categoryCourse19 = CategoryCourse.new
 categoryCourse19.category_id = 9
 categoryCourse19.course_id = 9
+categoryCourse19.save!
 categoryCourse20 = CategoryCourse.new
 categoryCourse20.category_id = 9
 categoryCourse20.course_id = 17
+categoryCourse20.save!
 categoryCourse21 = CategoryCourse.new
 categoryCourse21.category_id = 10
 categoryCourse21.course_id = 18
+categoryCourse21.save!
 categoryCourse22 = CategoryCourse.new
 categoryCourse22.category_id = 10
 categoryCourse22.course_id = 22
+categoryCourse22.save!
 categoryCourse23 = CategoryCourse.new
 categoryCourse23.category_id = 11
 categoryCourse23.course_id = 17
+categoryCourse23.save!
 categoryCourse24 = CategoryCourse.new
 categoryCourse24.category_id = 11
 categoryCourse24.course_id = 27
+categoryCourse24.save!
 categoryCourse25 = CategoryCourse.new
 categoryCourse25.category_id = 12
 categoryCourse25.course_id = 3
+categoryCourse25.save!
 categoryCourse26 = CategoryCourse.new
 categoryCourse26.category_id = 12
 categoryCourse26.course_id = 4
+categoryCourse26.save!
 
 #plan courses
 planCourse1 = PlanCourse.new

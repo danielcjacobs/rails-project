@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_23_021526) do
+ActiveRecord::Schema.define(version: 2020_04_23_191646) do
 
   create_table "catalog_courses", force: :cascade do |t|
     t.integer "catalog_id", null: false
@@ -29,10 +29,10 @@ ActiveRecord::Schema.define(version: 2020_04_23_021526) do
 
   create_table "categories", force: :cascade do |t|
     t.string "name"
-    t.integer "requirements_id", null: false
+    t.integer "requirement_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["requirements_id"], name: "index_categories_on_requirements_id"
+    t.index ["requirement_id"], name: "index_categories_on_requirement_id"
   end
 
   create_table "category_courses", force: :cascade do |t|
@@ -110,7 +110,7 @@ ActiveRecord::Schema.define(version: 2020_04_23_021526) do
 
   add_foreign_key "catalog_courses", "catalogs"
   add_foreign_key "catalog_courses", "courses"
-  add_foreign_key "categories", "requirements", column: "requirements_id"
+  add_foreign_key "categories", "requirements"
   add_foreign_key "category_courses", "categories"
   add_foreign_key "category_courses", "courses"
   add_foreign_key "plan_courses", "courses"

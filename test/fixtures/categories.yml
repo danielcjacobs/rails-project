@@ -2,8 +2,8 @@
 
 one:
   name: MyString
-  requirements: one
+  requirement: one
 
 two:
   name: MyString
-  requirements: two
+  requirement: two
