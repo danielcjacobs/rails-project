@@ -1,3 +1,8 @@
+var currPlan = false;
+var plan = false;
+var selectedMajor = "Comp. Sci.";
+var selectedCatalogYear = 2017;
+
 $(function(){
 	$.get("plans.json", function(plans){
 		console.log(plans);
@@ -227,98 +232,6 @@ class Year {
         }
     }
 }
-
-var currPlan = false;
-var plan = false;
-var selectedMajor = "Comp. Sci.";
-var selectedCatalogYear = 2017;
-var catalogLoaded = false;
-
-function planCallback(){
-    if (planRequest.readyState == 4){
-        var jsonResponse = JSON.parse(planRequest.responseText);
-        var plans = jsonResponse.plan;
-        catalog = jsonResponse.catalog;
-        var plan = false;
-        $(".dropdown-content").empty();
-        for (let i in plans){
-            if (plans[i].major === selectedMajor && plans[i].catalog_year === selectedCatalogYear){
-                plan = plans[i];
-            }
-            else{
-                // Put other plan options in dropdown menu on nav bar
-                $(".dropdown-content").append("<a onclick='changePlan(this.text)'>" + plans[i].major + ", " + plans[i].catalog_year + "</a>");
-            }
-        }
-        if (plan === false){
-            console.log("Error: did not find selected plan");
-        }
-
-        currPlan = new Plan(plan.student, plan.plan_name, plan.major, plan.currYear, plan.currTerm, plan.courses, plan.catalog_year);
-        currPlan.sortCourses();
-        currPlan.generateHTML();
-        $("#username").html(plan.student);
-        $("#major").html(plan.major);
-        $("#catYear").html(plan.catalog_year);
-
-        $("#hrsCompleted").html("Hours Completed: " + currPlan.hrsCompleted);
-        $("#hrsCurrent").html("Current Hours: " + currPlan.hrsCurrent);
-        $("#hrsPlanned").html("Total Hours Planned: " + currPlan.hrsPlanned);
-
-        let courses = [];
-        for(let i in catalog.courses) {
-            courses.push(catalog.courses[i]);
-        }
-
-		if (!catalogLoaded) {
-        	$("#catalogTable").DataTable( {
-           	"dom": '<"top"if>t',
-           	"data": courses,
-           	"columns": [
-               		{ "data": "id" },
-               		{ "data": "name" },
-               		{ "data": "description" },
-               		{ "data": "credits"}
-           	],
-           	"scrollY": "95px",
-           	"paging": false,
-           	"scrollCollapse": false 
-        	});
-        	$('.dataTables_scrollHeadInner').css('padding', '0');
-		catalogLoaded = true;
-	}
-       
-        // Send accordion request here because we don't want to create the accordion until the catalog has been created
-        accordionRequest = sendRequest("GET", 'http://judah.cedarville.edu/~jacobs/TermProject/php/getRequirements.php', accordionCallback);
-    }
-}
-
-function accordionCallback(){
-    if (accordionRequest.readyState == 4){
-        var accordionObjects = JSON.parse(accordionRequest.responseText);
-        
-        var categories = false;
-        for (let i in accordionObjects){
-            if (accordionObjects[i].major === selectedMajor && accordionObjects[i].catalog_year === selectedCatalogYear){
-                categories = accordionObjects[i].categories;
-            }
-        }
-        if (categories === false){
-            console.log("Error: did not find selected requirements");
-        }
-
-        $('#accordion').empty();
-        for (let item in categories){
-            let courses = categories[item].courses;
-            let itemHtml = "";
-            for (let c in courses){
-                itemHtml += '<li>' + courses[c] + ': ' + catalog.courses[courses[c]].name + '</li>';
-            }
-            $('#accordion').append('<h3><a href="#">' + item + '</a></h3><div>' + itemHtml + '</div>').accordion('refresh');
-        }
-    }
-}
-
 
 // changes plan, triggered on selection of new plan in dropdown
 function changePlan(selected){
