@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_23_021033) do
+ActiveRecord::Schema.define(version: 2020_04_23_021526) do
 
   create_table "catalog_courses", force: :cascade do |t|
     t.integer "catalog_id", null: false
@@ -102,6 +102,7 @@ ActiveRecord::Schema.define(version: 2020_04_23_021033) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "login"
     t.integer "major_id"
+    t.string "role"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["login"], name: "index_users_on_login", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
