@@ -49,7 +49,8 @@ function getPlans(){
 
         $("#hrsCompleted").html("Hours Completed: " + currPlan.hrsCompleted);
         $("#hrsCurrent").html("Current Hours: " + currPlan.hrsCurrent);
-        $("#hrsPlanned").html("Total Hours Planned: " + currPlan.hrsPlanned);
+		$("#hrsFuture").html("Remaining Hours: " + currPlan.hrsFuture);
+        $("#hrsTotal").html("Total Hours Planned: " + currPlan.hrsTotal);
 
 		let courses = [];
 		for (let c in plan.catalog.courses){
@@ -134,13 +135,42 @@ window.hoverOverPlan = function(event){
 window.dropOnPlan = function(event){
 	event.preventDefault();
 	event.target.children[1].innerHTML += "<li draggable='true' ondragstart='dragFromPlan(event)'>" + draggedCourse.designator + ": " + draggedCourse.name + "</li>";
+	if (event.target.classList.contains('current')){
+		currPlan.hrsCurrent += draggedCourse.credits;
+	}
+	else if (event.target.classList.contains('notStarted')){
+		currPlan.hrsFuture += draggedCourse.credits;
+	}
+	else{
+		currPlan.hrsCompleted += draggedCourse.credits;
+	}
+	let hours = parseInt(event.target.children[0].children[1].innerText.split(": ")[1]);
+	event.target.children[0].children[1].innerText = "Hours: " + (hours + draggedCourse.credits);
 	if (draggedReqOrigin !== null){
+		// From requirements accordion
+		currPlan.hrsTotal += draggedCourse.credits;
 		draggedReqOrigin.hidden = true;
 		draggedReqOrigin = null;
 	}
 	else if (draggedPlanOrigin !== null){
+		// From another term
+		if (draggedPlanOrigin.parentElement.parentElement.classList.contains('current')){
+			currPlan.hrsCurrent -= draggedCourse.credits;
+		}
+		else if (draggedPlanOrigin.parentElement.parentElement.classList.contains('notStarted')){
+			currPlan.hrsFuture -= draggedCourse.credits;
+		}
+		else{
+			currPlan.hrsCompleted -= draggedCourse.credits;
+		}
+		let originHours = parseInt(draggedPlanOrigin.parentElement.previousSibling.children[1].innerText.split(": ")[1]);
+		draggedPlanOrigin.parentElement.previousSibling.children[1].innerText = "Hours: " + (originHours - draggedCourse.credits);
 		draggedPlanOrigin.remove();
 		draggedPlanOrigin = null;
+	}
+	else{
+		// From catalog table
+		currPlan.hrsTotal += draggedCourse.credits;
 	}
 	$.post("/plan_courses", {
 		plan: plan.plan_name, 
@@ -149,6 +179,10 @@ window.dropOnPlan = function(event){
 		term: event.target.children[0].children[0].innerText.split(" ")[0],
 		year: parseInt(event.target.children[0].children[0].innerText.split(" ")[1]),
 	});
+	$("#hrsCompleted").html("Hours Completed: " + currPlan.hrsCompleted);
+    $("#hrsCurrent").html("Current Hours: " + currPlan.hrsCurrent);
+	$("#hrsFuture").html("Remaining Hours: " + currPlan.hrsFuture);
+    $("#hrsTotal").html("Total Hours Planned: " + currPlan.hrsTotal);
 	draggedCourse = null;
 }
 
@@ -159,6 +193,18 @@ window.hoverOverTrash = function(event){
 window.dropInTrash = function(event){
 	event.preventDefault();
 	if (draggedPlanOrigin !== null){
+		currPlan.hrsTotal -= draggedCourse.credits;
+		if (draggedPlanOrigin.parentElement.parentElement.classList.contains('current')){
+			currPlan.hrsCurrent -= draggedCourse.credits;
+		}
+		else if (draggedPlanOrigin.parentElement.parentElement.classList.contains('notStarted')){
+			currPlan.hrsFuture -= draggedCourse.credits;
+		}
+		else{
+			currPlan.hrsCompleted -= draggedCourse.credits;
+		}
+		let originHours = parseInt(draggedPlanOrigin.parentElement.previousSibling.children[1].innerText.split(": ")[1]);
+		draggedPlanOrigin.parentElement.previousSibling.children[1].innerText = "Hours: " + (originHours - draggedCourse.credits);
 		draggedPlanOrigin.remove();
 		draggedPlanOrigin = null;
 		
@@ -167,6 +213,10 @@ window.dropInTrash = function(event){
 			user: plan.user.id,
 			plan: plan.plan_name
 		});
+		$("#hrsCompleted").html("Hours Completed: " + currPlan.hrsCompleted);
+		$("#hrsCurrent").html("Current Hours: " + currPlan.hrsCurrent);
+		$("#hrsFuture").html("Remaining Hours: " + currPlan.hrsFuture);
+		$("#hrsTotal").html("Total Hours Planned: " + currPlan.hrsTotal);
 	}
 	draggedCourse = null;
 }
@@ -196,7 +246,8 @@ class Plan {
         this.years = [];
         this.hrsCompleted = 0;
         this.hrsCurrent = 0;
-        this.hrsPlanned = 0;
+		this.hrsFuture = 0;
+		this.hrsTotal = 0;
     }
 
     sortCourses(){
@@ -231,6 +282,7 @@ class Plan {
                 }
             }
             else{
+				this.hrsFuture += year.fallHrs;
                 urHTML += " notStarted";
             }
             urHTML += "' ondragover='hoverOverPlan(event)' ondrop='dropOnPlan(event)'>";
@@ -238,7 +290,7 @@ class Plan {
             urHTML += "<ul class='courses'>";
             for (let j = 0; j < year.fall.length; j++){
                 let course = year.fall[j];
-                this.hrsPlanned += course.hours;
+                this.hrsTotal += course.hours;
                 if (beforeCurrent){
                     this.hrsCompleted += course.hours;
                 }
@@ -255,6 +307,7 @@ class Plan {
                 }
             }
             else{
+				this.hrsFuture += year.springHrs;
                 urHTML += " notStarted";
             }
             urHTML += "' ondragover='hoverOverPlan(event)' ondrop='dropOnPlan(event)'>";
@@ -262,7 +315,7 @@ class Plan {
             urHTML += "<ul class='courses'>";
             for (let j = 0; j < year.spring.length; j++){
                 let course = year.spring[j];
-                this.hrsPlanned += course.hours;
+                this.hrsTotal += course.hours;
                 if (beforeCurrent){
                     this.hrsCompleted += course.hours;
                 }
@@ -279,13 +332,14 @@ class Plan {
                 }
             }
             else{
+				this.hrsFuture += year.summerHrs;
                 urHTML += " notStarted";
             }
             urHTML += "' ondragover='hoverOverPlan(event)' ondrop='dropOnPlan(event)'>";
             urHTML += "<header><span class='termHeader'>Summer " + year.name + "</span><span class='termHours'>Hours: " + year.summerHrs + "</span></header><ul class='courses'>";
             for (let j = 0; j < year.summer.length; j++){
                 let course = year.summer[j];
-                this.hrsPlanned += course.hours;
+                this.hrsTotal += course.hours;
                 if (beforeCurrent){
                     this.hrsCompleted += course.hours;
                 }

@@ -200,7 +200,7 @@ course17.credits = 3
 course17.save!
 course18 = Course.new
 course18.designator = "EGCP-3010"
-course18.name = "C++ ADLD"
+course18.name = "ADLD"
 course18.description = "I AM ROBOT"
 course18.credits = 3
 course18.save!
