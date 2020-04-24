@@ -132,6 +132,7 @@ window.hoverOverPlan = function(event){
 }
 
 window.dropOnPlan = function(event){
+	event.preventDefault();
 	event.target.children[1].innerHTML += "<li draggable='true' ondragstart='dragFromPlan(event)'>" + draggedCourse.designator + ": " + draggedCourse.name + "</li>";
 	if (draggedReqOrigin !== null){
 		draggedReqOrigin.hidden = true;
@@ -141,9 +142,33 @@ window.dropOnPlan = function(event){
 		draggedPlanOrigin.remove();
 		draggedPlanOrigin = null;
 	}
-	
+	$.post("/plan_courses", {
+		plan: plan.plan_name, 
+		user: plan.user.id, 
+		designator: draggedCourse.designator, 
+		term: event.target.children[0].children[0].innerText.split(" ")[0],
+		year: parseInt(event.target.children[0].children[0].innerText.split(" ")[1]),
+	});
 	draggedCourse = null;
-	
+}
+
+window.hoverOverTrash = function(event){
+	event.preventDefault();
+}
+
+window.dropInTrash = function(event){
+	event.preventDefault();
+	if (draggedPlanOrigin !== null){
+		draggedPlanOrigin.remove();
+		draggedPlanOrigin = null;
+		
+		$.get("/plan_courses", {
+			designator: draggedCourse.designator,
+			user: plan.user.id,
+			plan: plan.plan_name
+		});
+	}
+	draggedCourse = null;
 }
 
 class Course {
