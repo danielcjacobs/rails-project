@@ -187,7 +187,7 @@ course15.description = "Love Senior Design!"
 course15.credits = 3
 course15.save!
 course16 = Course.new
-course16.designator = "CS-4810"
+course16.designator = "CS-4820"
 course16.name = "Software Engr II"
 course16.description = "Love Senior Design!!"
 course16.credits = 3

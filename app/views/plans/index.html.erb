@@ -12,16 +12,9 @@
         
     </div>
     <div>
-        <div class="dropdown">
-            <button class="dropbtn">
-                <a><i class="fa fa-caret-down"></i>Change Plan</a>
-            </button>
-            <div class="dropdown-content">
-                <a href="#">Link 1</a>
-                <a href="#">Link 2</a>
-                <a href="#">Link 3</a>
-            </div>
-        </div>
+        <select id = "planSelect" class="dropdown">
+			<option selected disabled>Change Plan</option>
+        </select>
 		<% if user_signed_in?%>
 			<form name="logout" action="logout.php" method="post">
 				<button type="submit" value="Submit">

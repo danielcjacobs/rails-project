@@ -2,19 +2,36 @@ var currPlan = false;
 var plan = false;
 var selectedMajor = "Comp. Sci.";
 var selectedCatalogYear = 2017;
+var catalogLoaded = false;
 
-$(function(){
+$(getPlans);
+
+// changes plan, triggered on selection of new plan in dropdown
+$(document).on('change', '#planSelect', function (){
+    var selected = $(this).find("option:selected").text();
+	console.log(selected);
+    selected = selected.split(", ");
+    console.log(selected);
+    selectedMajor = selected[0];
+    selectedCatalogYear = parseInt(selected[1]);
+   
+    // send request to load new plan
+    getPlans();
+
+});
+
+function getPlans(){
 	$.get("plans.json", function(plans){
-		console.log(plans);
+		//console.log(plans);
         plan = false;
-        $(".dropdown-content").empty();
+        $(".dropdown").html("<option selected disabled>Change Plan</option>");
         for (let i in plans){
             if (plans[i].major === selectedMajor && plans[i].catalog.year === selectedCatalogYear){
                 plan = plans[i];
             }
             else{
                 // Put other plan options in dropdown menu on nav bar
-                $(".dropdown-content").append("<a onclick='changePlan(this.text)'>" + plans[i].major + ", " + plans[i].catalog.year + "</a>");
+                $(".dropdown").append("<option>" + plans[i].major + ", " + plans[i].catalog.year + "</option>");
             }
         }
         if (plan === false){
@@ -31,20 +48,27 @@ $(function(){
         $("#hrsCurrent").html("Current Hours: " + currPlan.hrsCurrent);
         $("#hrsPlanned").html("Total Hours Planned: " + currPlan.hrsPlanned);
 
-		$("#catalogTable").DataTable( {
-           	"dom": '<"top"if>t',
-           	"data": plan.catalog.courses,
-           	"columns": [
-               		{ "data": "designator" },
-               		{ "data": "name" },
-               		{ "data": "description" },
-               		{ "data": "credits"}
-           	],
-           	"scrollY": "95px",
-           	"paging": false,
-           	"scrollCollapse": false 
+		let courses = [];
+		for (let c in plan.catalog.courses){
+			courses.push(plan.catalog.courses[c]);
+		}
+		if (!catalogLoaded){
+			$("#catalogTable").DataTable( {
+				"dom": '<"top"if>t',
+				"data": courses,
+				"columns": [
+						{ "data": "designator" },
+						{ "data": "name" },
+						{ "data": "description" },
+						{ "data": "credits"}
+				],
+				"scrollY": "95px",
+				"paging": false,
+				"scrollCollapse": false 
         	});
         	$('.dataTables_scrollHeadInner').css('padding', '0');
+			catalogLoaded = true;
+		}
 		
         
         var requirements = plan.requirements;
@@ -59,7 +83,7 @@ $(function(){
             $('#accordion').append('<h3><a href="#">' + requirements[i].name + '</a></h3><div>' + itemHtml + '</div>').accordion('refresh');
         }
 	});
-});
+}
 
 class Course {
     constructor(desig, year, term){
@@ -231,17 +255,4 @@ class Year {
             }
         }
     }
-}
-
-// changes plan, triggered on selection of new plan in dropdown
-function changePlan(selected){
-    console.log(selected);
-    selected = selected.split(", ");
-    console.log(selected);
-    selectedMajor = selected[0];
-    selectedCatalogYear = parseInt(selected[1]);
-   
-    // send request to load new plan
-    planRequest = sendRequest("GET", 'http://judah.cedarville.edu/~jacobs/TermProject/php/getCombined.php', planCallback);
-
 }
