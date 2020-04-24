@@ -9,6 +9,7 @@ json.curr_year plan.curr_year
 json.curr_term plan.curr_term
 json.courses do
 	plan.plan_courses.each{ |planCourse| json.set! planCourse.course.designator do
+		json.designator planCourse.course.designator
 		json.year planCourse.year
 		json.term planCourse.term
 	end
@@ -19,6 +20,8 @@ json.catalog do
 	json.year plan.catalog.year
 	json.courses do 
 		plan.catalog.catalog_courses.each{ |catalogCourse| json.set! catalogCourse.course.designator do
+			json.id catalogCourse.course.id
+			json.designator catalogCourse.course.designator
 			json.name catalogCourse.course.name
 			json.description catalogCourse.course.description
 			json.credits catalogCourse.course.credits
