@@ -3,6 +3,9 @@ var plan = false;
 var selectedMajor = "Comp. Sci.";
 var selectedCatalogYear = 2017;
 var catalogLoaded = false;
+var draggedCourse = false;
+var draggedReqOrigin = false;
+var draggedPlanOrigin = false;
 
 $(getPlans);
 
@@ -68,6 +71,10 @@ function getPlans(){
         	});
         	$('.dataTables_scrollHeadInner').css('padding', '0');
 			catalogLoaded = true;
+			$('tr.odd').attr('draggable', 'true');
+			$('tr.odd').attr('ondragstart', 'dragFromCat(event)');
+			$('tr.even').attr('draggable', 'true');
+			$('tr.even').attr('ondragstart', 'dragFromCat(event)');
 		}
 		
         
@@ -79,14 +86,64 @@ function getPlans(){
 
         $('#accordion').empty();
         for (let i in requirements){
-            let courses = requirements[i].courses;
+            let reqCourses = requirements[i].courses;
             let itemHtml = "";
-            for (let c in courses){
-                itemHtml += '<li>' + courses[c] + ': ' + plan.catalog.courses[courses[c]].name + '</li>';
+            for (let reqC in reqCourses){
+				if (!courseInPlan(reqCourses[reqC])){
+					itemHtml += '<li draggable="true" ondragstart="dragFromReq(event)">' + reqCourses[reqC] + ': ' + plan.catalog.courses[reqCourses[reqC]].name + '</li>';
+				}
+				else{
+					itemHtml += '<li draggable="true" ondragstart="dragFromReq(event)" hidden="true">' + reqCourses[reqC] + ': ' + plan.catalog.courses[reqCourses[reqC]].name + '</li>';
+				}
             }
             $('#accordion').append('<h3><a href="#">' + requirements[i].name + '</a></h3><div>' + itemHtml + '</div>').accordion('refresh');
         }
 	});
+}
+
+function courseInPlan(designator){
+	let c = plan.courses[designator];
+	return c !== undefined;
+}
+
+window.dragFromReq = function(event){
+	let desig = event.target.innerText.split(": ")[0];
+	draggedCourse = plan.catalog.courses[desig];
+	draggedPlanOrigin = null;
+	draggedReqOrigin = event.target;
+}
+
+window.dragFromCat = function(event){
+	let desig = event.target.children[0].innerText
+	draggedCourse = plan.catalog.courses[desig];
+	draggedPlanOrigin = null;
+	draggedReqOrigin = null;
+}
+
+window.dragFromPlan = function(event){
+	let desig = event.target.innerText.split(": ")[0];
+	draggedCourse = plan.catalog.courses[desig];
+	draggedReqOrigin = null;
+	draggedPlanOrigin = event.target;
+}
+
+window.hoverOverPlan = function(event){
+	event.preventDefault();
+}
+
+window.dropOnPlan = function(event){
+	event.target.children[1].innerHTML += "<li draggable='true' ondragstart='dragFromPlan(event)'>" + draggedCourse.designator + ": " + draggedCourse.name + "</li>";
+	if (draggedReqOrigin !== null){
+		draggedReqOrigin.hidden = true;
+		draggedReqOrigin = null;
+	}
+	else if (draggedPlanOrigin !== null){
+		draggedPlanOrigin.remove();
+		draggedPlanOrigin = null;
+	}
+	
+	draggedCourse = null;
+	
 }
 
 class Course {
@@ -151,7 +208,7 @@ class Plan {
             else{
                 urHTML += " notStarted";
             }
-            urHTML += "'>";
+            urHTML += "' ondragover='hoverOverPlan(event)' ondrop='dropOnPlan(event)'>";
             urHTML += "<header><span class='termHeader'>Fall " + (year.name - 1) + "</span><span class='termHours'>Hours: " + year.fallHrs + "</span></header>";
             urHTML += "<ul class='courses'>";
             for (let j = 0; j < year.fall.length; j++){
@@ -160,7 +217,7 @@ class Plan {
                 if (beforeCurrent){
                     this.hrsCompleted += course.hours;
                 }
-                urHTML += "<li>" + course.id + " " + course.name + "</li>";
+                urHTML += "<li draggable='true' ondragstart='dragFromPlan(event)'>" + course.id + ": " + course.name + "</li>";
             }
             urHTML += "</ul></div>";
                 
@@ -175,7 +232,7 @@ class Plan {
             else{
                 urHTML += " notStarted";
             }
-            urHTML += "'>";
+            urHTML += "' ondragover='hoverOverPlan(event)' ondrop='dropOnPlan(event)'>";
             urHTML += "<header><span class='termHeader'>Spring " + year.name + "</span><span class='termHours'>Hours: " + year.springHrs + "</span></header>";
             urHTML += "<ul class='courses'>";
             for (let j = 0; j < year.spring.length; j++){
@@ -184,7 +241,7 @@ class Plan {
                 if (beforeCurrent){
                     this.hrsCompleted += course.hours;
                 }
-                urHTML += "<li>" + course.id + " " + course.name + "</li>";
+                urHTML += "<li draggable='true' ondragstart='dragFromPlan(event)'>" + course.id + ": " + course.name + "</li>";
             }
             urHTML += "</ul></div>";
                 
@@ -199,7 +256,7 @@ class Plan {
             else{
                 urHTML += " notStarted";
             }
-            urHTML += "'>";
+            urHTML += "' ondragover='hoverOverPlan(event)' ondrop='dropOnPlan(event)'>";
             urHTML += "<header><span class='termHeader'>Summer " + year.name + "</span><span class='termHours'>Hours: " + year.summerHrs + "</span></header><ul class='courses'>";
             for (let j = 0; j < year.summer.length; j++){
                 let course = year.summer[j];
@@ -207,7 +264,7 @@ class Plan {
                 if (beforeCurrent){
                     this.hrsCompleted += course.hours;
                 }
-                urHTML += "<li>" + course.id + " " + course.name + "</li>";
+                urHTML += "<li draggable='true' ondragstart='dragFromPlan(event)'>" + course.id + ": " + course.name + "</li>";
             }
             urHTML += "</ul></div></div>";
         }

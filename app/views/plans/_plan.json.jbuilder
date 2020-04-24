@@ -20,7 +20,6 @@ json.catalog do
 	json.year plan.catalog.year
 	json.courses do 
 		plan.catalog.catalog_courses.each{ |catalogCourse| json.set! catalogCourse.course.designator do
-			json.id catalogCourse.course.id
 			json.designator catalogCourse.course.designator
 			json.name catalogCourse.course.name
 			json.description catalogCourse.course.description
