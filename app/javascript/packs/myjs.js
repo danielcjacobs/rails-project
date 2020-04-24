@@ -3,6 +3,9 @@ var plan = false;
 var selectedMajor = "Comp. Sci.";
 var selectedCatalogYear = 2017;
 var catalogLoaded = false;
+var draggedCourse = false;
+var draggedReqOrigin = false;
+var draggedPlanOrigin = false;
 
 $(getPlans);
 
@@ -46,7 +49,8 @@ function getPlans(){
 
         $("#hrsCompleted").html("Hours Completed: " + currPlan.hrsCompleted);
         $("#hrsCurrent").html("Current Hours: " + currPlan.hrsCurrent);
-        $("#hrsPlanned").html("Total Hours Planned: " + currPlan.hrsPlanned);
+		$("#hrsFuture").html("Remaining Hours: " + currPlan.hrsFuture);
+        $("#hrsTotal").html("Total Hours Planned: " + currPlan.hrsTotal);
 
 		let courses = [];
 		for (let c in plan.catalog.courses){
@@ -68,6 +72,10 @@ function getPlans(){
         	});
         	$('.dataTables_scrollHeadInner').css('padding', '0');
 			catalogLoaded = true;
+			$('tr.odd').attr('draggable', 'true');
+			$('tr.odd').attr('ondragstart', 'dragFromCat(event)');
+			$('tr.even').attr('draggable', 'true');
+			$('tr.even').attr('ondragstart', 'dragFromCat(event)');
 		}
 		
         
@@ -79,14 +87,138 @@ function getPlans(){
 
         $('#accordion').empty();
         for (let i in requirements){
-            let courses = requirements[i].courses;
+            let reqCourses = requirements[i].courses;
             let itemHtml = "";
-            for (let c in courses){
-                itemHtml += '<li>' + courses[c] + ': ' + plan.catalog.courses[courses[c]].name + '</li>';
+            for (let reqC in reqCourses){
+				if (!courseInPlan(reqCourses[reqC])){
+					itemHtml += '<li draggable="true" ondragstart="dragFromReq(event)">' + reqCourses[reqC] + ': ' + plan.catalog.courses[reqCourses[reqC]].name + '</li>';
+				}
+				else{
+					itemHtml += '<li draggable="true" ondragstart="dragFromReq(event)" hidden="true">' + reqCourses[reqC] + ': ' + plan.catalog.courses[reqCourses[reqC]].name + '</li>';
+				}
             }
             $('#accordion').append('<h3><a href="#">' + requirements[i].name + '</a></h3><div>' + itemHtml + '</div>').accordion('refresh');
         }
 	});
+}
+
+function courseInPlan(designator){
+	let c = plan.courses[designator];
+	return c !== undefined;
+}
+
+window.dragFromReq = function(event){
+	let desig = event.target.innerText.split(": ")[0];
+	draggedCourse = plan.catalog.courses[desig];
+	draggedPlanOrigin = null;
+	draggedReqOrigin = event.target;
+}
+
+window.dragFromCat = function(event){
+	let desig = event.target.children[0].innerText
+	draggedCourse = plan.catalog.courses[desig];
+	draggedPlanOrigin = null;
+	draggedReqOrigin = null;
+}
+
+window.dragFromPlan = function(event){
+	let desig = event.target.innerText.split(": ")[0];
+	draggedCourse = plan.catalog.courses[desig];
+	draggedReqOrigin = null;
+	draggedPlanOrigin = event.target;
+}
+
+window.hoverOverPlan = function(event){
+	event.preventDefault();
+}
+
+window.dropOnPlan = function(event){
+	event.preventDefault();
+	event.target.children[1].innerHTML += "<li draggable='true' ondragstart='dragFromPlan(event)'>" + draggedCourse.designator + ": " + draggedCourse.name + "</li>";
+	if (event.target.classList.contains('current')){
+		currPlan.hrsCurrent += draggedCourse.credits;
+	}
+	else if (event.target.classList.contains('notStarted')){
+		currPlan.hrsFuture += draggedCourse.credits;
+	}
+	else{
+		currPlan.hrsCompleted += draggedCourse.credits;
+	}
+	let hours = parseInt(event.target.children[0].children[1].innerText.split(": ")[1]);
+	event.target.children[0].children[1].innerText = "Hours: " + (hours + draggedCourse.credits);
+	if (draggedReqOrigin !== null){
+		// From requirements accordion
+		currPlan.hrsTotal += draggedCourse.credits;
+		draggedReqOrigin.hidden = true;
+		draggedReqOrigin = null;
+	}
+	else if (draggedPlanOrigin !== null){
+		// From another term
+		if (draggedPlanOrigin.parentElement.parentElement.classList.contains('current')){
+			currPlan.hrsCurrent -= draggedCourse.credits;
+		}
+		else if (draggedPlanOrigin.parentElement.parentElement.classList.contains('notStarted')){
+			currPlan.hrsFuture -= draggedCourse.credits;
+		}
+		else{
+			currPlan.hrsCompleted -= draggedCourse.credits;
+		}
+		let originHours = parseInt(draggedPlanOrigin.parentElement.previousSibling.children[1].innerText.split(": ")[1]);
+		draggedPlanOrigin.parentElement.previousSibling.children[1].innerText = "Hours: " + (originHours - draggedCourse.credits);
+		draggedPlanOrigin.remove();
+		draggedPlanOrigin = null;
+	}
+	else{
+		// From catalog table
+		currPlan.hrsTotal += draggedCourse.credits;
+	}
+	$.post("/plan_courses", {
+		plan: plan.plan_name, 
+		user: plan.user.id, 
+		designator: draggedCourse.designator, 
+		term: event.target.children[0].children[0].innerText.split(" ")[0],
+		year: parseInt(event.target.children[0].children[0].innerText.split(" ")[1]),
+	});
+	$("#hrsCompleted").html("Hours Completed: " + currPlan.hrsCompleted);
+    $("#hrsCurrent").html("Current Hours: " + currPlan.hrsCurrent);
+	$("#hrsFuture").html("Remaining Hours: " + currPlan.hrsFuture);
+    $("#hrsTotal").html("Total Hours Planned: " + currPlan.hrsTotal);
+	draggedCourse = null;
+}
+
+window.hoverOverTrash = function(event){
+	event.preventDefault();
+}
+
+window.dropInTrash = function(event){
+	event.preventDefault();
+	if (draggedPlanOrigin !== null){
+		currPlan.hrsTotal -= draggedCourse.credits;
+		if (draggedPlanOrigin.parentElement.parentElement.classList.contains('current')){
+			currPlan.hrsCurrent -= draggedCourse.credits;
+		}
+		else if (draggedPlanOrigin.parentElement.parentElement.classList.contains('notStarted')){
+			currPlan.hrsFuture -= draggedCourse.credits;
+		}
+		else{
+			currPlan.hrsCompleted -= draggedCourse.credits;
+		}
+		let originHours = parseInt(draggedPlanOrigin.parentElement.previousSibling.children[1].innerText.split(": ")[1]);
+		draggedPlanOrigin.parentElement.previousSibling.children[1].innerText = "Hours: " + (originHours - draggedCourse.credits);
+		draggedPlanOrigin.remove();
+		draggedPlanOrigin = null;
+		
+		$.get("/plan_courses", {
+			designator: draggedCourse.designator,
+			user: plan.user.id,
+			plan: plan.plan_name
+		});
+		$("#hrsCompleted").html("Hours Completed: " + currPlan.hrsCompleted);
+		$("#hrsCurrent").html("Current Hours: " + currPlan.hrsCurrent);
+		$("#hrsFuture").html("Remaining Hours: " + currPlan.hrsFuture);
+		$("#hrsTotal").html("Total Hours Planned: " + currPlan.hrsTotal);
+	}
+	draggedCourse = null;
 }
 
 class Course {
@@ -114,7 +246,8 @@ class Plan {
         this.years = [];
         this.hrsCompleted = 0;
         this.hrsCurrent = 0;
-        this.hrsPlanned = 0;
+		this.hrsFuture = 0;
+		this.hrsTotal = 0;
     }
 
     sortCourses(){
@@ -149,18 +282,19 @@ class Plan {
                 }
             }
             else{
+				this.hrsFuture += year.fallHrs;
                 urHTML += " notStarted";
             }
-            urHTML += "'>";
+            urHTML += "' ondragover='hoverOverPlan(event)' ondrop='dropOnPlan(event)'>";
             urHTML += "<header><span class='termHeader'>Fall " + (year.name - 1) + "</span><span class='termHours'>Hours: " + year.fallHrs + "</span></header>";
             urHTML += "<ul class='courses'>";
             for (let j = 0; j < year.fall.length; j++){
                 let course = year.fall[j];
-                this.hrsPlanned += course.hours;
+                this.hrsTotal += course.hours;
                 if (beforeCurrent){
                     this.hrsCompleted += course.hours;
                 }
-                urHTML += "<li>" + course.id + " " + course.name + "</li>";
+                urHTML += "<li draggable='true' ondragstart='dragFromPlan(event)'>" + course.id + ": " + course.name + "</li>";
             }
             urHTML += "</ul></div>";
                 
@@ -173,18 +307,19 @@ class Plan {
                 }
             }
             else{
+				this.hrsFuture += year.springHrs;
                 urHTML += " notStarted";
             }
-            urHTML += "'>";
+            urHTML += "' ondragover='hoverOverPlan(event)' ondrop='dropOnPlan(event)'>";
             urHTML += "<header><span class='termHeader'>Spring " + year.name + "</span><span class='termHours'>Hours: " + year.springHrs + "</span></header>";
             urHTML += "<ul class='courses'>";
             for (let j = 0; j < year.spring.length; j++){
                 let course = year.spring[j];
-                this.hrsPlanned += course.hours;
+                this.hrsTotal += course.hours;
                 if (beforeCurrent){
                     this.hrsCompleted += course.hours;
                 }
-                urHTML += "<li>" + course.id + " " + course.name + "</li>";
+                urHTML += "<li draggable='true' ondragstart='dragFromPlan(event)'>" + course.id + ": " + course.name + "</li>";
             }
             urHTML += "</ul></div>";
                 
@@ -197,17 +332,18 @@ class Plan {
                 }
             }
             else{
+				this.hrsFuture += year.summerHrs;
                 urHTML += " notStarted";
             }
-            urHTML += "'>";
+            urHTML += "' ondragover='hoverOverPlan(event)' ondrop='dropOnPlan(event)'>";
             urHTML += "<header><span class='termHeader'>Summer " + year.name + "</span><span class='termHours'>Hours: " + year.summerHrs + "</span></header><ul class='courses'>";
             for (let j = 0; j < year.summer.length; j++){
                 let course = year.summer[j];
-                this.hrsPlanned += course.hours;
+                this.hrsTotal += course.hours;
                 if (beforeCurrent){
                     this.hrsCompleted += course.hours;
                 }
-                urHTML += "<li>" + course.id + " " + course.name + "</li>";
+                urHTML += "<li draggable='true' ondragstart='dragFromPlan(event)'>" + course.id + ": " + course.name + "</li>";
             }
             urHTML += "</ul></div></div>";
         }

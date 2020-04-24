@@ -200,7 +200,7 @@ course17.credits = 3
 course17.save!
 course18 = Course.new
 course18.designator = "EGCP-3010"
-course18.name = "C++ ADLD"
+course18.name = "ADLD"
 course18.description = "I AM ROBOT"
 course18.credits = 3
 course18.save!
@@ -955,6 +955,12 @@ planCourse39.course_id = 21
 planCourse39.term = "Spring"
 planCourse39.year = 2021
 planCourse39.save!
+planCourse40 = PlanCourse.new
+planCourse40.plan_id = 4
+planCourse40.course_id = 33
+planCourse40.term = "Spring"
+planCourse40.year = 2018
+planCourse40.save!
 
 
 #alternate syntax

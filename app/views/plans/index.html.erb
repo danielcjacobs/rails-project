@@ -35,6 +35,9 @@
             <div class="container">
                 <div id="accordion">
                 </div>
+				<div id="trash" ondragover='hoverOverTrash(event)' ondrop='dropInTrash(event)'>
+					<i class="fa fa-trash" aria-hidden="true"></i>
+				</div>
             </div>
         </div>
 
@@ -50,7 +53,8 @@
             <header class="panelHeader">Hours</header>                                  <div class="container">
                 <p id="hrsCompleted">Hours Completed: </p>
                 <p id="hrsCurrent">Current Hours: </p>
-                <p id="hrsPlanned">Total Hours Planned: </p>
+				<p id="hrsFuture">Remaining Hours: </p>
+                <p id="hrsTotal">Total Hours Planned: </p>
             </div>
         </div>
 
