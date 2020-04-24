@@ -49,6 +49,10 @@ $(function(){
         
         var requirements = plan.requirements;
 
+        $( function() {
+            $( "#accordion" ).accordion({collapsible: true, active: false});
+        });
+
         $('#accordion').empty();
         for (let i in requirements){
             let courses = requirements[i].courses;

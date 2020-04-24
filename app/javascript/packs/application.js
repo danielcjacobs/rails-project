@@ -11,7 +11,7 @@ require ('packs/myjs')
 require ('jquery')
 require ('jquery-ui')
 require ('datatables.net')
-require ('datatables.net-bs4')  
+require ('datatables.net-bs4')
 
 
 // Uncomment to copy all static images under ../images to the output folder and reference
