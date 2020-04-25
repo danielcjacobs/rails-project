@@ -191,6 +191,11 @@ table div, .dataTables_scrollHead, .dataTables_scrollHeadInner, .dataTables_scro
     color: green;
 }
 
+#upperPanel {
+    text-align: center;
+	flex-direction: column;
+}
+
 #trash{
 	font-size: 64px;
 }

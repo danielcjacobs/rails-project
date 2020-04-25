@@ -3,6 +3,7 @@ json.user do
 	json.login plan.user.login
 	json.role plan.user.role
 end
+json.id plan.id
 json.plan_name plan.name
 json.major plan.major.name
 json.curr_year plan.curr_year

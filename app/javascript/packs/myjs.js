@@ -1,13 +1,13 @@
-var currPlan = false;
-var plan = false;
+var currPlan = null;
+var plan = null;
 var selectedMajor = "Comp. Sci.";
 var selectedCatalogYear = 2017;
 var catalogLoaded = false;
-var draggedCourse = false;
-var draggedReqOrigin = false;
-var draggedPlanOrigin = false;
-
-$(getPlans);
+var planTableLoaded = false;
+var draggedCourse = null;
+var draggedReqOrigin = null;
+var draggedPlanOrigin = null;
+var draggedCatOrigin = null;
 
 // changes plan, triggered on selection of new plan in dropdown
 $(document).on('change', '#planSelect', function (){
@@ -19,15 +19,46 @@ $(document).on('change', '#planSelect', function (){
     selectedCatalogYear = parseInt(selected[1]);
    
     // send request to load new plan
-    getPlans();
+    getPlan();
 
 });
 
-function getPlans(){
-	$.get("plans.json", function(plans){
+// For loading the table of plans
+window.getAllPlans = function(){
+	$.get("/plans.json", function(plans){
 		//console.log(plans);
-        plan = false;
+		let buttons = [];
+		let colObjects = [];
+		for (let p in plans){
+			let openHtml = "<a href='/plans/" + plans[p].id + "'>Open</a>";
+			colObjects.push({"plan": plans[p], "open": openHtml });
+		}
+		if (!planTableLoaded){
+			$("#plansTable").DataTable( {
+				"dom": '<"top"if>t',
+				"data": colObjects,
+				"columns": [
+						{ "data": "plan.user.login" },
+						{ "data": "plan.plan_name" },
+						{ "data": "plan.major" },
+						{ "data": "plan.catalog.year"},
+						{ "data": "open" }
+				],
+				"paging": false,
+				"scrollCollapse": false 
+			});
+			$('.dataTables_scrollHeadInner').css('padding', '0');
+			planTableLoaded = true;
+		}
+	});
+}
+
+// For loading a single plan
+window.getPlan = function(){
+	$.get("/plans.json", function(plans){
+        plan = null;
         $(".dropdown").html("<option selected disabled>Change Plan</option>");
+		// set current plan
         for (let i in plans){
             if (plans[i].major === selectedMajor && plans[i].catalog.year === selectedCatalogYear){
                 plan = plans[i];
@@ -37,10 +68,11 @@ function getPlans(){
                 $(".dropdown").append("<option>" + plans[i].major + ", " + plans[i].catalog.year + "</option>");
             }
         }
-        if (plan === false){
+        if (plan == null){
             console.log("Error: did not find selected plan");
         }
 		
+		// dynamically generate years, terms, semesters on page
 		currPlan = new Plan(plan.user.login, plan.plan_name, plan.major, plan.curr_year, plan.curr_term, plan.courses, plan.catalog.year);
         currPlan.sortCourses();
         currPlan.generateHTML();
@@ -52,6 +84,7 @@ function getPlans(){
 		$("#hrsFuture").html("Remaining Hours: " + currPlan.hrsFuture);
         $("#hrsTotal").html("Total Hours Planned: " + currPlan.hrsTotal);
 
+		// load catalog table
 		let courses = [];
 		for (let c in plan.catalog.courses){
 			courses.push(plan.catalog.courses[c]);
@@ -79,12 +112,11 @@ function getPlans(){
 		}
 		
         
+		// load accordion with requirements
         var requirements = plan.requirements;
-
         $( function() {
             $( "#accordion" ).accordion({collapsible: true, active: false});
         });
-
         $('#accordion').empty();
         for (let i in requirements){
             let reqCourses = requirements[i].courses;
@@ -102,87 +134,118 @@ function getPlans(){
 	});
 }
 
+// check if course is already in the plan
 function courseInPlan(designator){
-	let c = plan.courses[designator];
+	let c = currPlan.courses[designator];
 	return c !== undefined;
 }
 
+// check if course is already in the semester being dropped on
+function courseInSemester(designator, droppedTerm){
+	for (let i=0; i < droppedTerm.children.length; i++){
+		if (droppedTerm.children[i].innerText.includes(designator)){
+			return true;
+		}
+	}
+	return false;
+}
+
+// set source course when dragging from requiremetns accordion
 window.dragFromReq = function(event){
 	let desig = event.target.innerText.split(": ")[0];
 	draggedCourse = plan.catalog.courses[desig];
 	draggedPlanOrigin = null;
+	draggedCatOrigin = null;
 	draggedReqOrigin = event.target;
 }
 
+// set source course when dragging from catalog table
 window.dragFromCat = function(event){
 	let desig = event.target.children[0].innerText
 	draggedCourse = plan.catalog.courses[desig];
 	draggedPlanOrigin = null;
 	draggedReqOrigin = null;
+	draggedCatOrigin = event.target;
 }
 
+// set source course when dragging from plan
 window.dragFromPlan = function(event){
 	let desig = event.target.innerText.split(": ")[0];
 	draggedCourse = plan.catalog.courses[desig];
 	draggedReqOrigin = null;
+	draggedCatOrigin = null;
 	draggedPlanOrigin = event.target;
 }
 
+// indicate valid drop when hovering over plan
 window.hoverOverPlan = function(event){
 	event.preventDefault();
 }
 
+// update db when dropping course on plan
 window.dropOnPlan = function(event){
 	event.preventDefault();
-	event.target.children[1].innerHTML += "<li draggable='true' ondragstart='dragFromPlan(event)'>" + draggedCourse.designator + ": " + draggedCourse.name + "</li>";
-	if (event.target.classList.contains('current')){
-		currPlan.hrsCurrent += draggedCourse.credits;
-	}
-	else if (event.target.classList.contains('notStarted')){
-		currPlan.hrsFuture += draggedCourse.credits;
-	}
-	else{
-		currPlan.hrsCompleted += draggedCourse.credits;
-	}
-	let hours = parseInt(event.target.children[0].children[1].innerText.split(": ")[1]);
-	event.target.children[0].children[1].innerText = "Hours: " + (hours + draggedCourse.credits);
-	if (draggedReqOrigin !== null){
-		// From requirements accordion
-		currPlan.hrsTotal += draggedCourse.credits;
-		draggedReqOrigin.hidden = true;
-		draggedReqOrigin = null;
-	}
-	else if (draggedPlanOrigin !== null){
-		// From another term
-		if (draggedPlanOrigin.parentElement.parentElement.classList.contains('current')){
-			currPlan.hrsCurrent -= draggedCourse.credits;
+	if (!(courseInSemester(draggedCourse.designator, event.target.children[1]) || (courseInPlan(draggedCourse.designator) && draggedCatOrigin != null))) {
+		event.target.children[1].innerHTML += "<li draggable='true' ondragstart='dragFromPlan(event)'>" + draggedCourse.designator + ": " + draggedCourse.name + "</li>";
+		if (event.target.classList.contains('current')){
+			currPlan.hrsCurrent += draggedCourse.credits;
 		}
-		else if (draggedPlanOrigin.parentElement.parentElement.classList.contains('notStarted')){
-			currPlan.hrsFuture -= draggedCourse.credits;
+		else if (event.target.classList.contains('notStarted')){
+			currPlan.hrsFuture += draggedCourse.credits;
 		}
 		else{
-			currPlan.hrsCompleted -= draggedCourse.credits;
+			currPlan.hrsCompleted += draggedCourse.credits;
 		}
-		let originHours = parseInt(draggedPlanOrigin.parentElement.previousSibling.children[1].innerText.split(": ")[1]);
-		draggedPlanOrigin.parentElement.previousSibling.children[1].innerText = "Hours: " + (originHours - draggedCourse.credits);
-		draggedPlanOrigin.remove();
-		draggedPlanOrigin = null;
+		let hours = parseInt(event.target.children[0].children[1].innerText.split(": ")[1]);
+		event.target.children[0].children[1].innerText = "Hours: " + (hours + draggedCourse.credits);
+		if (draggedReqOrigin !== null){
+			// From requirements accordion
+			currPlan.hrsTotal += draggedCourse.credits;
+			draggedReqOrigin.hidden = true;
+			draggedReqOrigin = null;
+		}
+		else if (draggedPlanOrigin !== null){
+			// From another term
+			if (draggedPlanOrigin.parentElement.parentElement.classList.contains('current')){
+				currPlan.hrsCurrent -= draggedCourse.credits;
+			}
+			else if (draggedPlanOrigin.parentElement.parentElement.classList.contains('notStarted')){
+				currPlan.hrsFuture -= draggedCourse.credits;
+			}
+			else{
+				currPlan.hrsCompleted -= draggedCourse.credits;
+			}
+			let originHours = parseInt(draggedPlanOrigin.parentElement.previousSibling.children[1].innerText.split(": ")[1]);
+			draggedPlanOrigin.parentElement.previousSibling.children[1].innerText = "Hours: " + (originHours - draggedCourse.credits);
+			draggedPlanOrigin.remove();
+			draggedPlanOrigin = null;
+		}
+		else{
+			// From catalog table
+			currPlan.hrsTotal += draggedCourse.credits;
+		}
+		// add to javascript plan object
+		let destTerm = event.target.children[0].children[0].innerText.split(" ")[0];
+		let destYear = parseInt(event.target.children[0].children[0].innerText.split(" ")[1]);
+		let newCourse = {
+			"designator": draggedCourse.designator,
+			"term": destTerm,
+			"year": destYear
+		};
+		currPlan.courses[draggedCourse.designator] = newCourse;
+		//update db
+		$.post("/plan_courses", {
+			plan: plan.plan_name, 
+			user: plan.user.id, 
+			designator: draggedCourse.designator, 
+			term: destTerm,
+			year: destYear
+		});
+		$("#hrsCompleted").html("Hours Completed: " + currPlan.hrsCompleted);
+		$("#hrsCurrent").html("Current Hours: " + currPlan.hrsCurrent);
+		$("#hrsFuture").html("Remaining Hours: " + currPlan.hrsFuture);
+		$("#hrsTotal").html("Total Hours Planned: " + currPlan.hrsTotal);
 	}
-	else{
-		// From catalog table
-		currPlan.hrsTotal += draggedCourse.credits;
-	}
-	$.post("/plan_courses", {
-		plan: plan.plan_name, 
-		user: plan.user.id, 
-		designator: draggedCourse.designator, 
-		term: event.target.children[0].children[0].innerText.split(" ")[0],
-		year: parseInt(event.target.children[0].children[0].innerText.split(" ")[1]),
-	});
-	$("#hrsCompleted").html("Hours Completed: " + currPlan.hrsCompleted);
-    $("#hrsCurrent").html("Current Hours: " + currPlan.hrsCurrent);
-	$("#hrsFuture").html("Remaining Hours: " + currPlan.hrsFuture);
-    $("#hrsTotal").html("Total Hours Planned: " + currPlan.hrsTotal);
 	draggedCourse = null;
 }
 
@@ -206,6 +269,7 @@ window.dropInTrash = function(event){
 		let originHours = parseInt(draggedPlanOrigin.parentElement.previousSibling.children[1].innerText.split(": ")[1]);
 		draggedPlanOrigin.parentElement.previousSibling.children[1].innerText = "Hours: " + (originHours - draggedCourse.credits);
 		draggedPlanOrigin.remove();
+		delete currPlan.courses[draggedCourse.designator];
 		draggedPlanOrigin = null;
 		
 		$.get("/plan_courses", {
