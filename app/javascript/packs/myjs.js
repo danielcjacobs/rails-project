@@ -45,7 +45,6 @@ window.getAllPlans = function(){
 						{ "data": "open" }
 				],
 				"paging": false,
-				"scrollCollapse": false 
 			});
 			$('.dataTables_scrollHeadInner').css('padding', '0');
 			planTableLoaded = true;
@@ -101,7 +100,7 @@ window.getPlan = function(){
 				],
 				"scrollY": "95px",
 				"paging": false,
-				"scrollCollapse": false 
+				"scrollCollapse": false
         	});
         	$('.dataTables_scrollHeadInner').css('padding', '0');
 			catalogLoaded = true;
@@ -223,6 +222,7 @@ window.dropOnPlan = function(event){
 		else{
 			// From catalog table
 			currPlan.hrsTotal += draggedCourse.credits;
+			removeFromRequirements(draggedCourse.designator);
 		}
 		// add to javascript plan object
 		let destTerm = event.target.children[0].children[0].innerText.split(" ")[0];
@@ -281,8 +281,40 @@ window.dropInTrash = function(event){
 		$("#hrsCurrent").html("Current Hours: " + currPlan.hrsCurrent);
 		$("#hrsFuture").html("Remaining Hours: " + currPlan.hrsFuture);
 		$("#hrsTotal").html("Total Hours Planned: " + currPlan.hrsTotal);
+		
+		addToRequirements(draggedCourse.designator);
 	}
 	draggedCourse = null;
+}
+
+// Unhide requirement if removed from plan
+window.addToRequirements = function(designator){
+	let acc = $('#accordion').get()[0];
+	for (let i=1; i<acc.children.length; i+=2){
+		let accChild = acc.children[i];
+		for (let j = 0; j<accChild.children.length; j++){
+			let req = accChild.children[j];
+			if (req.innerText.includes(designator)){
+				req.removeAttribute('hidden');
+				return;
+			}
+		}
+	}
+}
+
+// Hide requirement if added from catalog table
+window.removeFromRequirements = function(designator){
+	let acc = $('#accordion').get()[0];
+	for (let i=1; i<acc.children.length; i+=2){
+		let accChild = acc.children[i];
+		for (let j = 0; j<accChild.children.length; j++){
+			let req = accChild.children[j];
+			if (req.innerText.includes(designator)){
+				req.setAttribute('hidden', true);
+				return;
+			}
+		}
+	}
 }
 
 class Course {
