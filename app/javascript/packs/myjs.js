@@ -102,6 +102,32 @@ function getPlans(){
 	});
 }
 
+function checkMissingReqs() {
+    let requirements = plan.requirements;
+    let planCourses = currPlan.courses;
+    let reqsMissing = 0;
+    for (req in requirements) {
+        let reqType = requirements[req];
+        for (courseIdx in reqType.courses) {
+            let course = reqType.courses[courseIdx];
+            let reqMet = false;
+            for (id in planCourses) {
+                if (id == course) {
+                    reqMet = true;
+                }
+            }
+            if (!reqMet) {
+                reqsMissing++;
+            } 
+        }
+    }
+    if (reqsMissing == 0) {
+        $("#requirments").html("Requirements Met!");
+    } else {
+        $("#requirments").html("Requirments missing: " + reqsMissing);
+    }
+}
+
 function courseInPlan(designator){
 	let c = plan.courses[designator];
 	return c !== undefined;
@@ -125,7 +151,8 @@ window.dragFromPlan = function(event){
 	let desig = event.target.innerText.split(": ")[0];
 	draggedCourse = plan.catalog.courses[desig];
 	draggedReqOrigin = null;
-	draggedPlanOrigin = event.target;
+    draggedPlanOrigin = event.target;
+    checkMissingReqs();
 }
 
 window.hoverOverPlan = function(event){
@@ -183,6 +210,7 @@ window.dropOnPlan = function(event){
     $("#hrsCurrent").html("Current Hours: " + currPlan.hrsCurrent);
 	$("#hrsFuture").html("Remaining Hours: " + currPlan.hrsFuture);
     $("#hrsTotal").html("Total Hours Planned: " + currPlan.hrsTotal);
+    checkMissingReqs();
 	draggedCourse = null;
 }
 
