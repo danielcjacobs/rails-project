@@ -5,12 +5,19 @@ class PlansController < ApplicationController
   # GET /plans
   # GET /plans.json
   def index
-    @plans = Plan.where(user_id: current_user.id)
+	if current_user.role == "admin"
+		@plans = Plan.all
+	else
+		@plans = Plan.where(user_id: current_user.id)
+	end
   end
 
   # GET /plans/1
   # GET /plans/1.json
   def show
+	if @plan.user_id != current_user.id
+		redirect_to plans_path
+	end
   end
 
   # GET /plans/new
