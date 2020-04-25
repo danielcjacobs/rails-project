@@ -153,9 +153,9 @@ function checkMissingReqs() {
         }
     }
     if (reqsMissing == 0) {
-        $("#requirments").html("Requirements Met!");
+        $("#requirements").html("Requirements Met!");
     } else {
-        $("#requirments").html("Requirments missing: " + reqsMissing);
+        $("#requirements").html("Requirements missing: " + reqsMissing);
     }
 }
 
@@ -200,7 +200,6 @@ window.dragFromPlan = function(event){
     draggedPlanOrigin = event.target;
 	draggedCatOrigin = null;
     draggedPlanOrigin = event.target;
-    checkMissingReqs();
 }
 
 // indicate valid drop when hovering over plan
@@ -321,7 +320,8 @@ window.dropInTrash = function(event){
 		$("#hrsFuture").html("Remaining Hours: " + currPlan.hrsFuture);
 		$("#hrsTotal").html("Total Hours Planned: " + currPlan.hrsTotal);
 		
-		addToRequirements(draggedCourse.designator);
+        addToRequirements(draggedCourse.designator);
+        checkMissingReqs();
 	}
 	draggedCourse = null;
 }
