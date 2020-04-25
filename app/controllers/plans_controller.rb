@@ -15,8 +15,10 @@ class PlansController < ApplicationController
   # GET /plans/1
   # GET /plans/1.json
   def show
-	if @plan.user_id != current_user.id
-		redirect_to plans_path
+	if current_user.role == "student"
+		if @plan.user_id != current_user.id
+			redirect_to plans_path
+		end
 	end
   end
 
