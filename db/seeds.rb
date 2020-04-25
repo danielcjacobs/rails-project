@@ -33,7 +33,13 @@ user2.major_id = 1
 user2.role = "student"
 user2.save!
 
-User.create(login: "G", email: "g@cedarville.edu", password: "password", password_confirmation: "password", role: "admin")
+user3 = User.new
+user3.login = "G"
+user3.email = "g@cedarville"
+user3.password = "password"
+user3.password_confirmation = "password"
+user3.role = "admin"
+user3.save!
 
 #catalogs
 catalog1 = Catalog.new

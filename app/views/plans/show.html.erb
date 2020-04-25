@@ -1,9 +1,71 @@
-<p id="notice"><%= notice %></p>
+<nav id="header">
+    <div>
+		<% if user_signed_in?%>
+			<h1>Welcome, <%= current_user.login %></h1>
+			<h1 id="major"></h1>
+			<h1 id="catYear"></h1>
+		<% end %>
+        
+    </div>
+    <div>
+		<% if current_user.role == "student" %>
+			<select id = "planSelect" class="dropdown">
+				<option selected disabled>Change Plan</option>
+			</select>
+		<% end %>
+		<%= link_to 'Back', plans_path %>
+		<% if user_signed_in?%>
+			<%= link_to "Sign Out", destroy_user_session_path, :method => :delete %>
+		<% end %>
+        <a href="http://judah.cedarville.edu/peopleschoice/index.php"><i class="fa fa-home"></i>Home</a>
+    </div>
+</nav>
 
-<p>
-  <strong>Name:</strong>
-  <%= @plan.name %>
-</p>
 
-<%= link_to 'Edit', edit_plan_path(@plan) %> |
-<%= link_to 'Back', plans_path %>
+<div class="main">
+    <div class="upper">
+        <div id= "upperLeft" class="left panel">
+            <header class="panelHeader">Validation Form</header>
+            <div class="container">
+                <div id="accordion">
+                </div>
+				<div id="trash" ondragover='hoverOverTrash(event)' ondrop='dropInTrash(event)'>
+					<i class="fa fa-trash" aria-hidden="true"></i>
+				</div>
+            </div>
+        </div>
+
+        <div  id="upperRight" class="right panel">
+            <header class="panelHeader">Course Schedule</header>
+            <div class="container">
+            </div>
+        </div>
+    </div>
+
+    <div class="lower">
+        <div id="lowerLeft" class="left panel">
+            <header class="panelHeader">Hours</header>                                  <div class="container">
+                <p id="hrsCompleted">Hours Completed: </p>
+                <p id="hrsCurrent">Current Hours: </p>
+				<p id="hrsFuture">Remaining Hours: </p>
+                <p id="hrsTotal">Total Hours Planned: </p>
+            </div>
+        </div>
+
+        <div id="lowerRight" class="right panel">
+            <header class="panelHeader">Catalog Search</header>
+            <table id="catalogTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Hours</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+	<div id='testDiv'></div>
+</div>
+<script>getPlan()</script>
