@@ -161,15 +161,10 @@ function checkMissingReqs() {
 }
 
 window.addYears = function() {
-    alert("Got into add year function");
     if (currPlan.years.length >= 12) {
         alert("You can only have a maximum of 12 years in a plan!");
         return;
     }
-
-    // let queryString = window.location.search;
-    // let urlParams = new URLSearchParams(queryString);
-    // let numYears = urlParams.get("numYears");
 
     let numYears = parseInt($("#numYears").val());
 
@@ -179,22 +174,19 @@ window.addYears = function() {
     }
 
     let lastTermHeaderInPlan = $(".termHeader").get(-1);
-    let termAndYear = lastTermHeaderInPlan.textContent.split(" ");
-    let lastYearInPlan = parseInt(termAndYear[1]);
+    let lastYearInPlan = 0;
+    if (lastTermHeaderInPlan == "undefined") {
+        lastYearInPlan = currPlan.currYear - 1;
+    } else {
+        let termAndYear = lastTermHeaderInPlan.textContent.split(" ");
+        lastYearInPlan = parseInt(termAndYear[1]);
+    }
     
     for (let i = 1; i < numYears + 1; i++) {
         currPlan.years.push(new Year(lastYearInPlan + i));
     }
 
     currPlan.generateHTML();
-
-    // $.post("/plan", {
-	// 	plan: plan.plan_name, 
-	// 	user: plan.user.id, 
-	// 	designator: draggedCourse.designator, 
-	// 	term: event.target.children[0].children[0].innerText.split(" ")[0],
-	// 	year: parseInt(event.target.children[0].children[0].innerText.split(" ")[1]),
-	// });
     return;
 }
 
@@ -212,6 +204,7 @@ window.deleteYear = function() {
     $("#hrsCurrent").html("Current Hours: " + currPlan.hrsCurrent);
 	$("#hrsFuture").html("Remaining Hours: " + currPlan.hrsFuture);
     $("#hrsTotal").html("Total Hours Planned: " + currPlan.hrsTotal);
+    checkMissingReqs();
     currPlan.generateHTML();
     
 }
@@ -302,7 +295,7 @@ function deleteCoursesAndYear(year) {
 
     for (designator in coursesToRemove) {
         $.get("/plan_courses", {
-			designator: designator,
+			designator: coursesToRemove[designator].id,
 			user: plan.user.id,
 			plan: plan.plan_name
 		});
@@ -403,13 +396,35 @@ window.dropOnPlan = function(event){
 		}
 		// add to javascript plan object
 		let destTerm = event.target.children[0].children[0].innerText.split(" ")[0];
-		let destYear = parseInt(event.target.children[0].children[0].innerText.split(" ")[1]);
+        let destYear = parseInt(event.target.children[0].children[0].innerText.split(" ")[1]);
+        // if (destTerm == "Fall") {
+        //     destYear++;
+        // }
 		let newCourse = {
 			"designator": draggedCourse.designator,
 			"term": destTerm,
 			"year": destYear
-		};
-		currPlan.courses[draggedCourse.designator] = newCourse;
+        };
+        currPlan.courses[draggedCourse.designator] = newCourse;
+        // add full course to years array in plan
+        let newYearCourse = new Course(draggedCourse.designator, destYear, destTerm);
+        let year = null;
+        for (let i = 0; i < currPlan.years.length; i++) {
+            if (destYear == currPlan.years[i].name) {
+                year = currPlan.years[i];
+                break;
+            }
+        }
+        if (destTerm == "Fall") {
+            year.fall.push(newYearCourse);
+            year.fallHrs += newYearCourse.hours;
+        } else if (destTerm == "Spring") {
+            year.spring.push(newYearCourse);
+            year.springHrs += newYearCourse.hours;
+        } else {
+            year.summer.push(newYearCourse);
+            year.summerHrs += newYearCourse.hours;
+        }
 		//update db
 		$.post("/plan_courses", {
 			plan: plan.plan_name, 
@@ -459,7 +474,44 @@ window.dropInTrash = function(event){
 		draggedPlanOrigin.parentElement.previousSibling.children[1].innerText = "Hours: " + (originHours - draggedCourse.credits);
 		draggedPlanOrigin.remove();
 		delete currPlan.courses[draggedCourse.designator];
-		draggedPlanOrigin = null;
+        draggedPlanOrigin = null;
+        
+        for (i in currPlan.courses) {
+            if (currPlan.courses[i].designator == draggedCourse.designator) {
+                delete currPlan.courses[i];
+                break;
+            }
+        }
+    
+        let year = null;
+        for (let i = 0; i < currPlan.years.length; i++) {
+            if (this.draggedCourse.year == currPlan.years[i].name) {
+                year = currPlan.years[i];
+                break;
+            }
+        }
+        if (this.draggedCourse.term == "Fall") {
+            for (let i = 0; i < year.fall[i]; i++) {
+                if (year.fall[i].id == draggedCourse.designator) {
+                    year.fall.splice(i, 1);
+                }
+            }
+            year.fallHrs -= draggedCourse.hours;
+        } else if (destTerm == "Spring") {
+            for (let i = 0; i < year.spring[i]; i++) {
+                if (year.spring[i].id == draggedCourse.designator) {
+                    year.spring.splice(i, 1);
+                }
+            }
+            year.springHrs -= draggedCourse.hours;
+        } else {
+            for (let i = 0; i < year.summer[i]; i++) {
+                if (year.summer[i].id == draggedCourse.designator) {
+                    year.summer.splice(i, 1);
+                }
+            }
+            year.summerHrs += draggedCourse.hours;
+        }
 		
 		$.get("/plan_courses", {
 			designator: draggedCourse.designator,
@@ -565,6 +617,10 @@ class Plan {
     }
 
     generateHTML(){
+        currPlan.hrsCompleted = 0;
+        currPlan.hrsCurrent = 0;
+        currPlan.hrsFuture = 0;
+        currPlan.hrsTotal = 0;
         this.years.sort((a, b) => (a.name > b.name) ? 1 : -1);
         let urHTML = "<header class='panelHeader'>Course Schedule</header><div class='container'>"; 
         var beforeCurrent = true;
