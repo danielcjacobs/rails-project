@@ -82,6 +82,7 @@ window.getPlan = function(){
         $("#hrsCurrent").html("Current Hours: " + currPlan.hrsCurrent);
 		$("#hrsFuture").html("Remaining Hours: " + currPlan.hrsFuture);
         $("#hrsTotal").html("Total Hours Planned: " + currPlan.hrsTotal);
+        checkMissingReqs();
 
 		// load catalog table
 		let courses = [];
@@ -157,6 +158,156 @@ function checkMissingReqs() {
     } else {
         $("#requirements").html("Requirements missing: " + reqsMissing);
     }
+}
+
+window.addYears = function() {
+    alert("Got into add year function");
+    if (currPlan.years.length >= 12) {
+        alert("You can only have a maximum of 12 years in a plan!");
+        return;
+    }
+
+    // let queryString = window.location.search;
+    // let urlParams = new URLSearchParams(queryString);
+    // let numYears = urlParams.get("numYears");
+
+    let numYears = parseInt($("#numYears").val());
+
+    if (numYears > 12 || currPlan.years.length + numYears >= 12) {
+        alert("This will put you over the maximum of 12 years per plan! Try again.");
+        return;
+    }
+
+    let lastTermHeaderInPlan = $(".termHeader").get(-1);
+    let termAndYear = lastTermHeaderInPlan.textContent.split(" ");
+    let lastYearInPlan = parseInt(termAndYear[1]);
+    
+    for (let i = 1; i < numYears + 1; i++) {
+        currPlan.years.push(new Year(lastYearInPlan + i));
+    }
+
+    currPlan.generateHTML();
+
+    // $.post("/plan", {
+	// 	plan: plan.plan_name, 
+	// 	user: plan.user.id, 
+	// 	designator: draggedCourse.designator, 
+	// 	term: event.target.children[0].children[0].innerText.split(" ")[0],
+	// 	year: parseInt(event.target.children[0].children[0].innerText.split(" ")[1]),
+	// });
+    return;
+}
+
+window.deleteYear = function() {
+    let yearToDelete = parseInt($("#yearToDelete").val());
+    let isValidYear = validateYear(yearToDelete);
+    if (!isValidYear) {
+        alert("That's not valid year! Try again.");
+        return;
+    }
+
+    deleteCoursesAndYear(yearToDelete);
+
+    $("#hrsCompleted").html("Hours Completed: " + currPlan.hrsCompleted);
+    $("#hrsCurrent").html("Current Hours: " + currPlan.hrsCurrent);
+	$("#hrsFuture").html("Remaining Hours: " + currPlan.hrsFuture);
+    $("#hrsTotal").html("Total Hours Planned: " + currPlan.hrsTotal);
+    currPlan.generateHTML();
+    
+}
+
+function validateYear(year) {
+    let isValid = false;
+    for (let i = 0; i < currPlan.years.length; i++) {
+        if (year == parseInt(currPlan.years[i].name)) {
+            isValid = true;
+            break;
+        }
+    }
+    return isValid;
+}
+
+function deleteCoursesAndYear(year) {
+    let planYear = null;
+    for (let i = 0; i < currPlan.years.length; i++) {
+        if (year == parseInt(currPlan.years[i].name)) {
+            planYear = currPlan.years[i];
+            break;
+        }
+    }
+    let fallCourses = planYear.fall;
+    let springCourses = planYear.spring;
+    let summerCourses = planYear.summer;
+
+    let coursesToRemove = fallCourses.concat(springCourses).concat(summerCourses);
+
+    let hoursRemoved = 0;
+    let hoursCompletedRemoved = 0;
+    let hoursRemainingRemoved = 0;
+    let currentHoursRemoved = 0;
+
+    let currYear = currPlan.currYear;
+    let currTerm = currPlan.currTerm;
+
+    for (x in coursesToRemove) {
+        let course = coursesToRemove[x];
+        hoursRemoved += course.hours;
+        if (currYear > course.year) {
+            hoursCompletedRemoved += course.hours;
+        } else if (currYear < course.year) {
+            hoursRemainingRemoved += course.hours;
+        } else if (currTerm == "Fall") {
+            if (course.term == "Fall") {
+                currentHoursRemoved += course.hours;
+            } else {
+                hoursRemainingRemoved += course.hours;
+            }
+        } else if (currTerm == "Spring") {
+            if (course.term == "Fall") {
+                hoursCompletedRemoved += course.hours;
+            } else if (course.term == "Spring") {
+                currentHoursRemoved += course.hours;
+            } else {
+                hoursRemainingRemoved += course.hours;
+            }
+        } else if (currTerm == "Summer") {
+            if (course.term == "Summer") {
+                currentHoursRemoved += course.hours;
+            } else {
+                hoursCompletedRemoved += course.hours;
+            }
+        }
+    }
+
+    currPlan.hrsCompleted -= hoursCompletedRemoved;
+    currPlan.hrsCurrent -= currentHoursRemoved;
+    currPlan.hrsFuture -= hoursRemainingRemoved;
+    currPlan.hrsTotal -= hoursRemoved;
+
+
+    for (j in currPlan.courses) {
+        for (k in coursesToRemove) {
+            if (currPlan.courses[j].designator == coursesToRemove[k].id) {
+                delete currPlan.courses[j];
+                break;
+            }
+        }
+    }
+
+    for (l in currPlan.years) {
+        if (parseInt(currPlan.years[l].name) == year) {
+            currPlan.years.splice(l, 1);
+        }
+    }
+
+    for (designator in coursesToRemove) {
+        $.get("/plan_courses", {
+			designator: designator,
+			user: plan.user.id,
+			plan: plan.plan_name
+		});
+    }
+
 }
 
 function courseInPlan(designator){
@@ -366,6 +517,18 @@ class Course {
     }
 }
 
+var yearControlHtml = "<div id='yearControlContainer'>" +
+                    "<div class='inlineForm'>" +
+                    "<input type='submit' id='addYear' value='Add Year(s)' onclick='addYears()'>" +
+                    "<label for='numYears' id='numYearsLabel'>Number of years to add:  </label>" +
+                    "<input type='text' id='numYears' name='numYears' value='1'>" +
+                    "</div>" +
+                    "<div class='inlineForm'>" +
+                    "<input type='submit' id='deleteYear' onclick='return deleteYear();' value='Delete Year'>" +
+                    "<label for='numYears' id='yearToDeleteLabel'>Year to delete:  </label>" +
+                    "<input type='text' id='yearToDelete' name='yearToDelete'>" +
+                    "</div></div>";
+
 class Plan {
     constructor(student, name, major, currYr, currTerm, courses, cat_yr){
         this.name = name;
@@ -482,6 +645,7 @@ class Plan {
             }
             urHTML += "</ul></div></div>";
         }
+        urHTML += yearControlHtml;
         urHTML += "</div>";
         var upperRight = $("#upperRight").html(urHTML);
     }

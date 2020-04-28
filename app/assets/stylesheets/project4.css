@@ -203,3 +203,17 @@ table div, .dataTables_scrollHead, .dataTables_scrollHeadInner, .dataTables_scro
 #trash{
 	font-size: 64px;
 }
+
+.inlineForm {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+}
+
+#numYears {
+    width: 20px;
+}
+
+#yearToDelete {
+    width: 40px;
+}

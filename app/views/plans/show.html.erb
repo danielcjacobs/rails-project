@@ -39,6 +39,18 @@
             <header class="panelHeader">Course Schedule</header>
             <div class="container">
             </div>
+            <div id="yearControlContainer">
+                <form class="inlineForm" action="">
+                  <input type="submit" id="addYear" onclick="addYear()" value="Add Year(s)">
+                  <label for="numYears" id="numYearsLabel">Number of years to add: </label>
+                  <input type="text" id="numYears" name="numYears" value="1">
+                </form>
+                <form class="inlineForm" action="">
+                  <input type="submit" id="deleteYear" onclick="deleteYear()" value="Delete Year">
+                  <label for="numYears" id="yearToDeleteLabel">Year to delete: </label>
+                  <input type="text" id="yearToDelete" name="yearToDelete">
+                </form>
+            </div>
         </div>
     </div>
 

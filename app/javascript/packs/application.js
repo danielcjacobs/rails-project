@@ -20,3 +20,34 @@ require ('datatables.net-bs4')
 //
 const images = require.context('../../assets/images', true)
 const imagePath = (name) => images(name, true)
+
+$(document).ready(function() {
+    $("#addYear").on("click", function() { 
+        alert("Got into add year function");
+        if (currPlan.years.length >= 12) {
+            alert("You can only have a maximum of 12 years in a plan!");
+            return;
+        }
+
+        // let queryString = window.location.search;
+        // let urlParams = new URLSearchParams(queryString);
+        // let numYears = urlParams.get("numYears");
+
+        let numYears = document.getElementById("numYears");
+
+        if (numYears > 12 || currPlan.years.length + numYears >= 12) {
+            alert("This will put you over the maximum of 12 years per plan! Try again.");
+            return;
+        }
+
+        let lastTermHeaderInPlan = $(".termHeader").get(-1).split(" ");
+        let lastYearInPlan = int (lastTermHeaderInPlan[1]);
+        
+        for (let i = 0; i < numYears; i++) {
+            currPlan.years.push(new Year(lastYearInPlan + i));
+        }
+
+        currPlan.generateHTML();
+        return;
+    });
+});
