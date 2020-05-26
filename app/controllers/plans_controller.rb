@@ -1,15 +1,25 @@
 class PlansController < ApplicationController
   before_action :set_plan, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_user!
 
   # GET /plans
   # GET /plans.json
   def index
-    @plans = Plan.where(user_id: current_user.id)
+	if current_user.role == "admin"
+		@plans = Plan.all
+	else
+		@plans = Plan.where(user_id: current_user.id)
+	end
   end
 
   # GET /plans/1
   # GET /plans/1.json
   def show
+	if current_user.role == "student"
+		if @plan.user_id != current_user.id
+			redirect_to plans_path
+		end
+	end
   end
 
   # GET /plans/new

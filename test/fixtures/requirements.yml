@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  major: one
+  catalog: one
+
+two:
+  major: two
+  catalog: two

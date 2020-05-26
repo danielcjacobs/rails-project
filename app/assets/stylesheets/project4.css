@@ -1,0 +1,219 @@
+nav h1, nav div{
+    display: inline-block;
+}
+
+form {
+    display: inline-block;
+}
+
+form button, .dropdown button {
+    background-color: Transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+    box-shadow: none;
+}
+
+form button:hover, form button:active {
+    background-color: Transparent;
+}
+
+.dropdown {
+    overflow: hidden;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    min-width: 160px;
+    background-color: #f1f1f1;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0,0, 0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    float: none;
+    color: black;
+    padding: 12px 16px;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content{
+    display: block;
+}
+
+#accordion{
+    margin: 3px;
+}
+
+#accordion div{
+    font-size:12px;
+    padding: 4px;
+}
+
+#accordion h3:hover{
+    background-color: #7b9095;
+}
+
+.dataTables_scrollHeadInner{
+	padding: 0 !important;
+}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active{
+    background-color: #b4bfba;
+}
+
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover {
+    background-color: #7b9095;
+}
+
+select{
+    width: 60%;
+}
+
+table{
+    width: 100%;
+    border-spacing: 0px;
+    padding: 0;
+}
+
+th, td{
+    border: 1px solid black;
+}
+
+table div, .dataTables_scrollHead, .dataTables_scrollHeadInner, .dataTables_scrollBody, .dataTables_scrollBodyInner{
+    padding: 0;
+    margin: 0;
+}
+
+.left {
+    width: 250px;
+    text-align: center;
+}
+
+.right {
+    padding: 0;
+    display: block;
+    width: 100%;
+    width: -webkit-fill-available;
+}
+
+.upper {
+    max-height: 1000px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: row;
+}
+
+.lower {
+    display: flex;
+    flex-direction: row;
+    max-height: fit-content;
+    min-height: min-content;
+}
+
+.container {
+    overflow-y: auto;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 95%;
+}
+
+.year {
+    margin: 0;
+    display: flex;
+}
+
+.term {
+    margin: 2px;
+    display: inline-block;
+    border: 2px solid #7b9095;
+    border-radius: 4px;
+    background-color: #b4bfba;
+    font-size: 12px;
+    max-height: 300px;
+    min-height: 100px;
+    width: 100%;
+    width: -webkit-fill-available;
+}
+
+.termHeader {
+    display: inline;
+    font-weight: bold;
+    text-align: left;
+}
+
+.termHours {
+    float: right;
+    font-weight: normal;
+}
+
+.current {
+    background-color: #0fa2ba;
+}
+
+.notStarted {
+    background-color: #7b9095;
+}
+
+.courses {
+    padding-inline-start: 10px;
+}
+
+.validation {
+    padding: 5px;
+}
+
+.lower .left {
+    justify-content: center;
+    align-items: center;
+}
+
+.formSubmit {
+    text-align: center;
+    padding: 0;
+}
+
+.lower .right {
+    justify-content: center;
+    align-items: center;
+}
+
+.ferror {
+    color: red;
+}
+
+.fsuccess{
+    color: green;
+}
+
+#upperPanel {
+    text-align: center;
+	flex-direction: column;
+}
+
+#trash{
+	font-size: 64px;
+}
+
+.inlineForm {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+}
+
+#numYears {
+    width: 20px;
+}
+
+#yearToDelete {
+    width: 40px;
+}

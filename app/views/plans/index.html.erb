@@ -1,27 +1,117 @@
-<p id="notice"><%= notice %></p>
+<nav id="header">
+    <div>
+		<% if user_signed_in?%>
+			<h1>Welcome, <%= current_user.login %></h1>
+			<h1 id="major"></h1>
+			<h1 id="catYear"></h1>
+		<% else %>
+			<%= link_to "Sign In", new_user_session_path, :method => :get %>
+			<%= link_to "Sign up", new_user_registration_path, :method => :get %>
+		<% end %>
+        
+    </div>
+    <div>
+        <% if user_signed_in?%>
+			<%= link_to "Sign Out", destroy_user_session_path, :method => :delete %>
+		<% else %>
+		<% end %>
+        <a href="http://judah.cedarville.edu/peopleschoice/index.php"><i class="fa fa-home"></i>Home</a>
+    </div>
+</nav>
 
-<h1>Plans</h1>
+<div class="main">
+    <div id="upperPanel" class="upper panel">
+    <header class="panelHeader">Plans</header>
+        <div class="container">
+			<table id="plansTable">
+                <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Plan Name</th>
+                    <th>Major</th>
+                    <th>Catalog Year</th>
+					<th>Open</th>
+                </tr>
+                </thead>
+            </table> 
+       </div>
+    </div>
+</div>
+<script>getAllPlans()</script>
+<!--<nav id="header">
+    <div>
+		<% if user_signed_in?%>
+			<h1>Welcome, <%= current_user.login %></h1>
+			<h1 id="major"></h1>
+			<h1 id="catYear"></h1>
+			<%= link_to "Sign Out", destroy_user_session_path, :method => :delete %>
+		<% else %>
+			<%= link_to "Sign In", new_user_session_path, :method => :get %>
+			<%= link_to "Sign up", new_user_registration_path, :method => :get %>
+		<% end %>
+        
+    </div>
+    <div>
+        <select id = "planSelect" class="dropdown">
+			<option selected disabled>Change Plan</option>
+        </select>
+		<% if user_signed_in?%>
+			<form name="logout" action="logout.php" method="post">
+				<button type="submit" value="Submit">
+					<a><i class="fa fa-arrow-circle-left"></i>Logout</a>
+				</button>
+			</form>
+		<% else %>
+		<% end %>
+        <a href="http://judah.cedarville.edu/peopleschoice/index.php"><i class="fa fa-home"></i>Home</a>
+    </div>
+</nav>
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
 
-  <tbody>
-    <% @plans.each do |plan| %>
-      <tr>
-        <td><%= plan.name %></td>
-        <td><%= link_to 'Show', plan %></td>
-        <td><%= link_to 'Edit', edit_plan_path(plan) %></td>
-        <td><%= link_to 'Destroy', plan, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<div class="main">
+    <div class="upper">
+        <div id= "upperLeft" class="left panel">
+            <header class="panelHeader">Validation Form</header>
+            <div class="container">
+                <div id="accordion">
+                </div>
+				<div id="trash" ondragover='hoverOverTrash(event)' ondrop='dropInTrash(event)'>
+					<i class="fa fa-trash" aria-hidden="true"></i>
+				</div>
+            </div>
+        </div>
 
-<br>
+        <div  id="upperRight" class="right panel">
+            <header class="panelHeader">Course Schedule</header>
+            <div class="container">
+            </div>
+        </div>
+    </div>
 
-<%= link_to 'New Plan', new_plan_path %>
+    <div class="lower">
+        <div id="lowerLeft" class="left panel">
+            <header class="panelHeader">Hours</header>                                  <div class="container">
+                <p id="hrsCompleted">Hours Completed: </p>
+                <p id="hrsCurrent">Current Hours: </p>
+				<p id="hrsFuture">Remaining Hours: </p>
+                <p id="hrsTotal">Total Hours Planned: </p>
+                <p id="requirments">Requirments </p>
+            </div>
+        </div>
+
+        <div id="lowerRight" class="right panel">
+            <header class="panelHeader">Catalog Search</header>
+            <table id="catalogTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Hours</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+	<div id='testDiv'></div>
+</div>
